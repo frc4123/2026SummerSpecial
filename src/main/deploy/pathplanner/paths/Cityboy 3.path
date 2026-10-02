@@ -1,0 +1,81 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.407114293981482,
+        "y": 0.5944492910879637
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.518067563657407,
+        "y": 0.586379195601852
+      },
+      "isLocked": false,
+      "linkedName": "CityBoy 2.5-3"
+    },
+    {
+      "anchor": {
+        "x": 6.980769309497816,
+        "y": 3.6482407660116447
+      },
+      "prevControl": {
+        "x": 7.434598059952692,
+        "y": 2.306950168304221
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Spear 3-4"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.7033840351458887,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.4,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.3064696618037136,
+      "maxWaypointRelativePos": 0.4746767241379315,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 1.0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "Cityboy (R)",
+  "idealStartingState": {
+    "velocity": 0.7,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": true
+}

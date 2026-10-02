@@ -1,0 +1,80 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.230854528356482,
+        "y": 0.6210871672453708
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.7991969762731483,
+        "y": 0.4213030960648154
+      },
+      "isLocked": false,
+      "linkedName": "Orbit 4-5"
+    },
+    {
+      "anchor": {
+        "x": 1.0275813802083338,
+        "y": 0.4968864293981483
+      },
+      "prevControl": {
+        "x": 1.341658998842593,
+        "y": 0.4737259114583332
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Orbit 5-6"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.15253841362126255,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 0.31,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Uptake",
+      "waypointRelativePos": 0.2173354443521594,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Uptake"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "OrbitAuto (R)",
+  "idealStartingState": {
+    "velocity": 1.25,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": false
+}

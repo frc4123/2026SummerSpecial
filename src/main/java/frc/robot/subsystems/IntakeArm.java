@@ -1,0 +1,146 @@
+package frc.robot.subsystems;
+
+import frc.robot.Constants;
+import frc.robot.Constants.IntakeArmConstants;
+
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
+import com.ctre.phoenix6.controls.DynamicMotionMagicTorqueCurrentFOC;
+import com.ctre.phoenix6.hardware.CANdi;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+
+import org.wpilib.command2.SubsystemBase;
+
+
+public class IntakeArm extends SubsystemBase {
+
+    private final TalonFX intakeArmMotor = new TalonFX(
+        Constants.CanIdSystemCore.Intake_Arm,
+        Constants.CanIdSystemCore.canbus2
+    );
+
+    private final CANdi intakeCANdi = IntakeArmConstants.intakeCANdi;
+
+    private final StatusSignal<Boolean> isSwitchNotPressed = intakeCANdi.getS1Closed();
+
+    private boolean hasZeroed = false;
+
+    // Motion Magic controller object
+    private final DynamicMotionMagicTorqueCurrentFOC motionMagic =
+        new DynamicMotionMagicTorqueCurrentFOC(
+            IntakeArmConstants.stowPosition,
+            IntakeArmConstants.velocity,
+            IntakeArmConstants.acceleration
+        );
+
+    private final DynamicMotionMagicTorqueCurrentFOC slowMotionMagic =
+        new DynamicMotionMagicTorqueCurrentFOC(
+            IntakeArmConstants.stowPosition,
+            IntakeArmConstants.slowVelocity,
+            IntakeArmConstants.acceleration
+        );
+
+        private final DynamicMotionMagicTorqueCurrentFOC midMotionMagic =
+        new DynamicMotionMagicTorqueCurrentFOC(
+            IntakeArmConstants.stowPosition,
+            IntakeArmConstants.midVelocity,
+            IntakeArmConstants.acceleration
+        );
+        
+    public IntakeArm(){
+        // τηισ ισ ωερυ ιμπορταντ
+        configureMotor();
+    }
+
+    private void configureMotor() {
+        intakeArmMotor.getConfigurator().apply(new TalonFXConfiguration()
+        .withMotorOutput(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake)));
+
+        FeedbackConfigs feedbackUnits = new FeedbackConfigs()
+            .withSensorToMechanismRatio(IntakeArmConstants.sensorToMechanismRatio);
+
+        Slot0Configs pid = new Slot0Configs()
+            .withKP(IntakeArmConstants.kP)
+            .withKI(IntakeArmConstants.kI)
+            .withKD(IntakeArmConstants.kD)
+            .withKS(IntakeArmConstants.kS)
+            .withKV(IntakeArmConstants.kV)
+            .withKA(IntakeArmConstants.kA)
+            .withKG(IntakeArmConstants.kG)
+            .withGravityType(GravityTypeValue.Arm_Cosine)
+            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
+
+        MotorOutputConfigs motorOutput = new MotorOutputConfigs()
+            .withInverted(InvertedValue.Clockwise_Positive);
+        
+        TorqueCurrentConfigs torqueDeadband = new TorqueCurrentConfigs()
+            .withTorqueNeutralDeadband(6.5);
+
+        intakeArmMotor.getConfigurator().apply(pid);
+        intakeArmMotor.getConfigurator().apply(feedbackUnits);
+        intakeArmMotor.getConfigurator().apply(motorOutput);
+        intakeArmMotor.getConfigurator().apply(torqueDeadband);
+    }
+
+    public void setIntakePosition(double pos){
+        intakeArmMotor.setControl(  
+            motionMagic.withPosition(pos));
+    }
+
+    public void setSlowIntakePosition(double pos) {
+        intakeArmMotor.setControl(
+            slowMotionMagic.withPosition(pos)
+        );
+    }
+
+    public void setMidIntakePosition(double pos) {
+        intakeArmMotor.setControl(
+            midMotionMagic.withPosition(pos)
+        );
+    }
+
+    public double getIntakePosition() {
+        return intakeArmMotor.getPosition().getValueAsDouble();
+    }
+
+    public void zeroIntake() {
+        intakeArmMotor.setPosition(IntakeArmConstants.stowPosition);
+    }
+
+    public boolean isSwitchPressed() {
+        return !isSwitchNotPressed.getValue();
+    }
+
+    public void setBrakeMode() {
+        intakeArmMotor.getConfigurator().apply(new TalonFXConfiguration()
+        .withMotorOutput(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake)));
+    }
+
+    public void setCoastMode() {
+        intakeArmMotor.getConfigurator().apply(new TalonFXConfiguration()
+        .withMotorOutput(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast)));
+    }
+
+    @Override
+    public void periodic() {
+        BaseStatusSignal.refreshAll(isSwitchNotPressed);
+
+        if(isSwitchPressed() && !hasZeroed) {
+            zeroIntake();
+            hasZeroed = true;
+        }
+
+        if(!isSwitchPressed()) {
+            hasZeroed = false;
+        }
+    }
+}

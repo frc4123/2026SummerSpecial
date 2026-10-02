@@ -1,0 +1,88 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.21534642650463,
+        "y": 3.3542251157407406
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.879289279513889,
+        "y": 3.5935067274305554
+      },
+      "isLocked": false,
+      "linkedName": "Spear 1-2"
+    },
+    {
+      "anchor": {
+        "x": 2.5007346643518527,
+        "y": 2.305375144675926
+      },
+      "prevControl": {
+        "x": 3.4263750590707396,
+        "y": 1.607752089587882
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "CityBoy 2-2.5"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.2087171052631579,
+      "rotationDegrees": -12.882313956575127
+    },
+    {
+      "waypointRelativePos": 0.3679070723684209,
+      "rotationDegrees": 15.568076525989893
+    },
+    {
+      "waypointRelativePos": 0.5750000000000002,
+      "rotationDegrees": 0.4326576489986068
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.290948275862069,
+      "maxWaypointRelativePos": 0,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "UptakeStop",
+      "waypointRelativePos": 0.1208471760797342,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 15.206249401323529
+  },
+  "reversed": false,
+  "folder": "Cityboy (R)",
+  "idealStartingState": {
+    "velocity": 0.8,
+    "rotation": -58.236999999999995
+  },
+  "useDefaultConstraints": true
+}

@@ -1,0 +1,73 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.33252683738426,
+        "y": 4.947117621527777
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.279709959200126,
+        "y": 5.262917805752668
+      },
+      "isLocked": false,
+      "linkedName": "CityBoyLeft 1-2"
+    },
+    {
+      "anchor": {
+        "x": 2.4489144946324597,
+        "y": 5.632301673944687
+      },
+      "prevControl": {
+        "x": 3.0172351482896653,
+        "y": 5.612654544213974
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "CityBoyLeft 2-3"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5270439281798245,
+      "rotationDegrees": 25.644205631061716
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.290948275862069,
+      "maxWaypointRelativePos": 0,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": -41.74643234718218
+  },
+  "reversed": false,
+  "folder": "Cityboy (L)",
+  "idealStartingState": {
+    "velocity": 0.3,
+    "rotation": 50.673278898676465
+  },
+  "useDefaultConstraints": true
+}

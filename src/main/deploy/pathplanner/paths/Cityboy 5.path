@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.761001694414119,
+        "y": 2.6607979667030577
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.380525552674673,
+        "y": 2.3737703557132455
+      },
+      "isLocked": false,
+      "linkedName": "Spear 4-5"
+    },
+    {
+      "anchor": {
+        "x": 2.1112232191593887,
+        "y": 2.1296273426128094
+      },
+      "prevControl": {
+        "x": 2.5969162231623,
+        "y": 2.5347371952328968
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 23.397763915925964
+  },
+  "reversed": false,
+  "folder": "Cityboy (R)",
+  "idealStartingState": {
+    "velocity": 0.8,
+    "rotation": 29.162018965807064
+  },
+  "useDefaultConstraints": true
+}

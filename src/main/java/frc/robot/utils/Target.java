@@ -1,0 +1,98 @@
+package frc.robot.utils;
+
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation3d;
+//import org.wpilib.driverstation.MatchState;
+import org.wpilib.driverstation.RobotState;
+// import org.wpilib.driverstation.Alliance;
+// import org.wpilib.driverstation.MatchType;
+// import org.wpilib.driverstation.DriverStationErrors;
+import frc.robot.Constants;
+import frc.robot.Constants.VisionConstants;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
+
+public class Target {
+
+    private static CommandSwerveDrivetrain swerve = CommandSwerveDrivetrain.getInstance();
+
+    public static Translation3d getTarget(){
+
+        double x = swerve.getState().Pose.getX();
+        double y = swerve.getState().Pose.getY();
+
+        if(Field.isBlue()) {
+            if(x < Constants.VisionConstants.blueHub.getX()){
+                return Constants.VisionConstants.blueHubTranslation3d;
+            // Past hub - match the Y zones from Turret.targetAngle()
+            } else if (y >= 5.029) {
+                // Top zone - depot
+                return Constants.VisionConstants.blueDepotAim.getTranslation(); // blueDepot   Convert Pose2d to Translation3d
+            } else if (y > 4.044) {
+                // Upper middle zone - left bump corner
+                return Constants.VisionConstants.blueDepotAim.getTranslation(); //blueLeftBumpCorner.
+            } else if (y > 3.059) {
+                // Lower middle zone - right bump corner
+                if(RobotState.isAutonomous()){return VisionConstants.blueAutoAimThreshold.getTranslation();}
+                return Constants.VisionConstants.blueAimThreshold.getTranslation(); //blueRIghtBumpCorner
+            } else {
+                // Bottom zone - aim threshold
+                if(RobotState.isAutonomous()){return VisionConstants.blueAutoAimThreshold.getTranslation();} //TODO make for red side and left side too same for all autos
+                return Constants.VisionConstants.blueAimThreshold.getTranslation(); //blueAimThreshold
+            }
+        }
+        else if(Field.isRed()) {
+            if(x > Constants.VisionConstants.redHub.getX()){
+                return Constants.VisionConstants.redHubTranslation3d;
+            // Past hub - match the Y zones from Turret.targetAngle()
+            } else if (y >= 5.029) {
+                // Top zone - aim threshold
+                if(RobotState.isAutonomous()){return VisionConstants.redAutoAimThreshold.getTranslation();}
+                return Constants.VisionConstants.redAimThreshold.getTranslation(); // redAimThreshold
+            } else if (y > 4.044) {
+                // Upper middle zone - right bump corner
+                if(RobotState.isAutonomous()){return VisionConstants.redAutoAimThreshold.getTranslation();}
+                return Constants.VisionConstants.redAimThreshold.getTranslation(); // redRightBumpCorner
+            } else if (y > 3.059) {
+                // Lower middle zone - left bump corner
+                return Constants.VisionConstants.redDepotAim.getTranslation(); //redLeftBumpCorner
+            } else {
+                // Bottom zone - depot
+                return Constants.VisionConstants.redDepotAim.getTranslation(); //redDepot
+            }
+        }
+    
+        return Constants.VisionConstants.blueHubTranslation3d;
+    }
+
+    public static Rotation2d getTrenchAngle(double x) {
+        if (Field.isBlue()) {
+            if (x > 4.63){
+                return new Rotation2d(Math.toRadians(0));
+            } else {
+                return new Rotation2d(Math.toRadians(180));
+            }
+        } else {
+            if (x > 11.91){
+                return new Rotation2d(Math.toRadians(180));
+            } else {
+                return new Rotation2d(Math.toRadians(0));
+            }
+        }
+    }
+
+    public static Rotation2d getBumpAngle(double x) {
+        if (Field.isBlue()) {
+            if (x > 4.63){
+                return new Rotation2d(Math.toRadians(135));
+            } else {
+                return new Rotation2d(Math.toRadians(45));
+            }
+        } else {
+            if (x > 11.91){
+                return new Rotation2d(Math.toRadians(45));
+            } else {
+                return new Rotation2d(Math.toRadians(135));
+            }
+        }
+    }
+}

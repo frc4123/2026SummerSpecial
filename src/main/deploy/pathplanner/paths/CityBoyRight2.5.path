@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.5007346643518527,
+        "y": 2.305375144675926
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.5381396713392586,
+        "y": 1.1267612765091797
+      },
+      "isLocked": false,
+      "linkedName": "CityBoy 2-2.5"
+    },
+    {
+      "anchor": {
+        "x": 4.407114293981482,
+        "y": 0.5944492910879637
+      },
+      "prevControl": {
+        "x": 3.5583108362268523,
+        "y": 0.8089957320601853
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "CityBoy 2.5-3"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 0.7,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.7,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "Cityboy (R)",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 15.206249401323529
+  },
+  "useDefaultConstraints": false
+}

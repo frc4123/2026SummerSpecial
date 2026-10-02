@@ -1,0 +1,187 @@
+// package frc.robot.subsystems;
+
+// import java.util.OptionalInt;
+
+// import org.wpilib.math.geometry.Pose2d;
+// import org.wpilib.math.geometry.Pose3d;
+// import org.wpilib.math.geometry.Rotation3d;
+// import org.wpilib.math.geometry.Transform3d;
+// import org.wpilib.math.geometry.Translation3d;
+// import org.wpilib.networktables.NetworkTable;
+// import org.wpilib.networktables.NetworkTableInstance;
+// import org.wpilib.networktables.StructPublisher;
+// import org.wpilib.system.Timer;
+// import org.wpilib.smartdashboard.SmartDashboard;
+// import org.wpilib.command2.SubsystemBase;
+// import frc.robot.Constants.Quest;
+// import gg.questnav.questnav.PoseFrame;
+// import gg.questnav.questnav.QuestNav;
+
+// public class Oculus extends SubsystemBase{
+
+//     private final CommandSwerveDrivetrain swerve = CommandSwerveDrivetrain.getInstance();
+//     private final Transform3d robotToQuest;
+//     private int loopLimiter = 0;
+//     private PoseFrame[] unreadFrames;
+//     private static Boolean trustQuest;
+//     StructPublisher<Pose2d> posePub;
+
+//     private double lastVisionUpdateTime = 0;
+
+//     QuestNav quest = new QuestNav();
+
+//     public Oculus() {
+//         trustQuest = true;
+
+//         robotToQuest = new Transform3d(
+//             new Translation3d(
+//                 Quest.frontX,
+//                 Quest.frontY,
+//                 Quest.frontZ),
+//             new Rotation3d(
+//                 Quest.frontRoll,
+//                 Quest.frontPitch,
+//                 Quest.frontYaw)
+//         );
+
+//         NetworkTable questTable = NetworkTableInstance.getDefault()
+//             .getTable("State")
+//             .getSubTable("QuestNav");
+//         posePub = questTable.getStructTopic("Pose", Pose2d.struct).publish();
+//     }
+
+//     public Pose3d getRobotPose() {
+//         if (unreadFrames.length > 0) {
+//             // Get the most recent Quest pose
+//             Pose3d questPose = unreadFrames[unreadFrames.length - 1].questPose3d();
+
+//             // Transform by the mount pose to get your robot pose
+//             Pose3d robotPose = questPose.transformBy(robotToQuest.inverse());
+//             return robotPose;
+//         }
+
+//         return null;
+//     }
+
+//     public Pose3d getQuestPose() {
+//         if (unreadFrames.length > 0) {
+//             // Get the most recent Quest pose
+//             Pose3d questPose = unreadFrames[unreadFrames.length - 1].questPose3d();
+//             return questPose;
+//         }
+//         return null;
+//     }
+
+//     public void setRobotPose(){
+//         // Transform by the offset to get the Quest pose
+//         double now = Timer.getTimestamp();
+//         if (now - lastVisionUpdateTime < 20) return; // 20s refresh cap
+
+//         lastVisionUpdateTime = now;
+
+//         Pose2d pose2d = swerve.getState().Pose;
+//         Pose3d questPose = new Pose3d(pose2d).transformBy(robotToQuest);
+
+//         quest.setPose(questPose);
+//     }
+
+//     public boolean isQuestNavConnected() {
+//         // You might need to check NetworkTables or add a timeout mechanism
+//         PoseFrame[] frames = unreadFrames;
+//         return frames != null && frames.length > 0;
+//     }
+
+//     public void updateSwerve(){
+//         //if there are no questFrames then dont crash the robot code
+        
+//         if(unreadFrames == null || unreadFrames.length <= 0) {return;}
+//         // Get the latest pose data frames from the Quest
+//         // Loop over the pose data frames and send them to the pose estimator
+
+//         PoseFrame latestFrame = unreadFrames[unreadFrames.length - 1];
+
+//         if (latestFrame.isTracking()) {
+//             Pose3d questPose = latestFrame.questPose3d();
+//             double timestamp = latestFrame.dataTimestamp();
+
+//             Pose3d robotPose = questPose.transformBy(robotToQuest.inverse());
+
+//             // Compare Quest pose against current swerve odometry estimate
+//             double deviation = swerve.getState().Pose.getTranslation()
+//                 .getDistance(robotPose.toPose2d().getTranslation());
+
+//             // Hard reject if Quest disagrees with odometry too much
+//             if (deviation > 0.5) return;
+
+//             swerve.addVisionMeasurement(
+//                 robotPose.toPose2d(),
+//                 timestamp,
+//                 Quest.QUESTNAV_STD_DEVS
+//             );
+//         }
+
+//         // for (PoseFrame questFrame : unreadFrames) {
+//         //     // Make sure the Quest was tracking the pose for this frame
+//         //     if (questFrame.isTracking()) {
+//         //         // Get the pose of the Quest
+//         //         Pose3d questPose = questFrame.questPose3d();
+//         //         // Get timestamp for when the data was sent
+//         //         double timestamp = questFrame.dataTimestamp();
+
+//         //         // Transform by the mount pose to get your robot pose
+//         //         Pose3d robotPose = questPose.transformBy(robotToQuest.inverse());
+
+//         //         // You can put some sort of filtering here if you would like!
+
+//         //         // Add the measurement to our estimator
+//         //         swerve.addVisionMeasurement(
+//         //             robotPose.toPose2d(),
+//         //             timestamp,
+//         //             Quest.QUESTNAV_STD_DEVS
+//         //         );
+//         //     }
+//         // }
+//     }
+
+//     public static Boolean trustQuest(){
+//         return trustQuest;
+//     }
+    
+//     public void publishQuestStatus(){
+//         OptionalInt questBattery = quest.getBatteryPercent();
+//         // boolean questTrackingStatus = quest.isTracking();
+//         int questBatteryInt;
+
+//         if (quest.isConnected() && loopLimiter % 10 == 0) {
+//             questBatteryInt = questBattery.getAsInt();
+//             SmartDashboard.putString("Oculus Quest Battery", questBatteryInt + "%");
+//             // SmartDashboard.putBoolean("Is Quest Tracking", questTrackingStatus);
+//         } else if (!quest.isConnected()) { 
+//             SmartDashboard.putString("Oculus Quest Battery", "unable to be retrieved");
+//         }
+//     }
+
+//     // public void publishQuestState(){
+//     //     Pose3d questPose = getQuestPose();
+//     //     if(questPose != null) {
+//     //         Pose2d questPose2d = questPose.toPose2d();
+//     //         posePub.set(questPose2d);
+//     //     }
+//     // }
+
+//     @Override
+//     public void periodic() {
+
+//         publishQuestStatus();
+//         trustQuest = SmartDashboard.getBoolean("Trust Quest", false);
+//         unreadFrames = quest.getAllUnreadPoseFrames();
+//         if (isQuestNavConnected()) {
+//             setRobotPose();
+//             if(trustQuest) {  
+//                 updateSwerve();
+//             }
+//         }
+
+//         loopLimiter++;
+//     }
+// }
