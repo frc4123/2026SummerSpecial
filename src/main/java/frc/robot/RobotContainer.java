@@ -498,43 +498,44 @@ public class RobotContainer {
     }
 
 
-    public void initializeAutoChooser() {
-        autoChooser.addDefault("super secret auto", 
-        new WaitCommand(5));
+//     public void initializeAutoChooser() {
+//         autoChooser.addDefault("super secret auto", 
+//         new WaitCommand(5));
         
-        autoChooser.add("City Boy Left", new ParallelCommandGroup(
-            new WaitCommand(0.01),
-            new SequentialCommandGroup(new CityBoyLeft().cityBoyLeft())
-        ));
+//         autoChooser.add("City Boy Left", new ParallelCommandGroup(
+//             new WaitCommand(0.01),
+//             new SequentialCommandGroup(new CityBoyLeft().cityBoyLeft())
+//         ));
 
-        autoChooser.add("City Boy Right", new ParallelCommandGroup(
-            new WaitCommand(0.01),
-            new SequentialCommandGroup(new CityBoyRight().cityBoyRight())
-        ));
+//         autoChooser.add("City Boy Right", new ParallelCommandGroup(
+//             new WaitCommand(0.01),
+//             new SequentialCommandGroup(new CityBoyRight().cityBoyRight())
+//         ));
 
-        autoChooser.add("MadTown Left", new ParallelCommandGroup(
-            new WaitCommand(0.01),
-            new SequentialCommandGroup(new MadTown().madTownLeft())
-        ));
+//         autoChooser.add("MadTown Left", new ParallelCommandGroup(
+//             new WaitCommand(0.01),
+//             new SequentialCommandGroup(new MadTown().madTownLeft())
+//         ));
 
-        autoChooser.add("Orbit Right", new ParallelCommandGroup(
-            new WaitCommand(0.01),
-            new SequentialCommandGroup(new orbit().orbitRight())
-        ));
+//         autoChooser.add("Orbit Right", new ParallelCommandGroup(
+//             new WaitCommand(0.01),
+//             new SequentialCommandGroup(new orbit().orbitRight())
+//         ));
 
-        autoChooser.add("Orbit Right Delay", new SequentialCommandGroup(
-            new WaitCommand(4).andThen(new orbit().orbitRight())
-        ));
+//         autoChooser.add("Orbit Right Delay", new SequentialCommandGroup(
+//             new WaitCommand(4).andThen(new orbit().orbitRight())
+//         ));
 
-        autoChooser.add("5m test", new ParallelCommandGroup(
-            new WaitCommand(0.01),
-            new SequentialCommandGroup(new mtest().metertest())
-        ));
+//         autoChooser.add("5m test", new ParallelCommandGroup(
+//             new WaitCommand(0.01),
+//             new SequentialCommandGroup(new mtest().metertest())
+//         ));
 
-        Tunables.publish("Auto Selector", autoChooser);
-    }
+//         Tunables.publish("Auto Selector", autoChooser);
+//     }
 
-    public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
-    }
+//     public Command getAutonomousCommand() {
+//         return autoChooser.getSelected();
+//     }
 }
+
