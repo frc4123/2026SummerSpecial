@@ -55,7 +55,7 @@ public class Hood extends SubsystemBase{
     private void configureMotor() {
 
         hoodMotor.getConfigurator().apply(new TalonFXConfiguration()
-        .withMotorOutput(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake)));
+        .withMotorOutput(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast)));
         
         Slot0Configs pid = new Slot0Configs()
             .withKP(HoodConstants.kP)

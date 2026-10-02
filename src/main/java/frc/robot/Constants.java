@@ -64,7 +64,8 @@ public class Constants {
 
         public static final int Intake_Arm = 19;
 
-        public static final int Intake_Roller = 20;
+        public static final int Left_Intake_Roller = 20;
+        public static final int Right_Intake_Roller = 27;
 
         public static final int Hood = 21;
 

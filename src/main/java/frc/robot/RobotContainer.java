@@ -13,24 +13,24 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import java.lang.Math;
 
-import org.wpilib.math.geometry.Pose3d;
+// import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.kinematics.ChassisVelocities;
+// import org.wpilib.math.kinematics.ChassisVelocities;
 import org.wpilib.driverstation.GenericHID.RumbleType;
-import org.wpilib.framework.RobotBase;
+// import org.wpilib.framework.RobotBase;
 import org.wpilib.system.Timer;
 
-import org.wpilib.tunable.Selectable;
+// import org.wpilib.tunable.Selectable;
 import org.wpilib.tunable.Tunables;
-import org.wpilib.command2.Command;
+// import org.wpilib.command2.Command;
 import org.wpilib.command2.Commands;
 import org.wpilib.command2.button.CommandGenericHID;
 import org.wpilib.command2.button.CommandNiDsXboxController;
 import org.wpilib.command2.button.Trigger;
-import org.wpilib.command2.ParallelCommandGroup;
+// import org.wpilib.command2.ParallelCommandGroup;
 //import org.wpilib.command2.ParallelRaceGroup;
 // import org.wpilib.command2.RepeatCommand;
-import org.wpilib.command2.SequentialCommandGroup;
+// import org.wpilib.command2.SequentialCommandGroup;
 import org.wpilib.command2.WaitCommand;
 
 import frc.robot.generated.TunerConstants;
@@ -42,11 +42,11 @@ import frc.robot.subsystems.IntakeRoller;
 import frc.robot.subsystems.SevenEleven;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Uptake;
-import frc.robot.subsystems.Vision;
+// import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.turret.Turret;
-import frc.robot.subsystems.turret.TrajectoryCalculator;
-import frc.robot.subsystems.turret.TrajectoryCalculator.ShotData;
-import frc.robot.subsystems.turret.TurretVisSim;
+// import frc.robot.subsystems.turret.TrajectoryCalculator;
+// import frc.robot.subsystems.turret.TrajectoryCalculator.ShotData;
+// import frc.robot.subsystems.turret.TurretVisSim;
 import frc.robot.utils.FuelSim;
 import frc.robot.utils.ShiftHelpers;
 import frc.robot.utils.Target;
@@ -54,11 +54,11 @@ import frc.robot.Constants.InputConstants;
 import frc.robot.Constants.Sim;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.Sim.Mode;
-import frc.robot.commands.autos.CityBoyLeft;
-import frc.robot.commands.autos.CityBoyRight;
-import frc.robot.commands.autos.MadTown;
-import frc.robot.commands.autos.mtest;
-import frc.robot.commands.autos.orbit;
+// import frc.robot.commands.autos.CityBoyLeft;
+// import frc.robot.commands.autos.CityBoyRight;
+// import frc.robot.commands.autos.MadTown;
+// import frc.robot.commands.autos.mtest;
+// import frc.robot.commands.autos.orbit;
 import frc.robot.commands.hood.AvoidDecapitation;
 import frc.robot.commands.hood.HoodAim;
 import frc.robot.commands.intakeArm.ForceIntakeArmMid;
@@ -110,7 +110,7 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    private final Selectable<Command> autoChooser = new Selectable<Command>();
+    // private final Selectable<Command> autoChooser = new Selectable<Command>();
 
     private final CommandNiDsXboxController joystick = new CommandNiDsXboxController(InputConstants.kDriverControllerPort0);
     private final CommandGenericHID Dpad = new CommandGenericHID(InputConstants.kDriverControllerPort0);
