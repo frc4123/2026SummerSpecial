@@ -119,9 +119,9 @@ public class RobotContainer {
 
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     // private final Oculus oculus = new Oculus();
-    private final Vision vision = new Vision();
+    // private final Vision vision = new Vision();
     private final Turret turret = new Turret(drivetrain);
-    private final TurretVisSim turretVisSim = new TurretVisSim( () -> new Pose3d(drivetrain.getState().Pose), () -> drivetrain.getState().Velocity, vision, turret);
+    // private final TurretVisSim turretVisSim = new TurretVisSim( () -> new Pose3d(drivetrain.getState().Pose), () -> drivetrain.getState().Velocity, vision, turret);
     private final IntakeRoller intakeRollers = new IntakeRoller();
     private final SevenEleven sevenEleven = new SevenEleven();
     private final IntakeArm intakeArm = new IntakeArm();
@@ -465,29 +465,29 @@ public class RobotContainer {
 
         instance.start();
 
-        if (RobotBase.isSimulation()) {
-            turret.setDefaultCommand(turretVisSim.repeatedlyLaunchFuel(
-                () -> {
-                    ShotData shot = TrajectoryCalculator.iterativeMovingShotFromFunnelClearance(
-                        drivetrain.getState().Pose,
-                        new ChassisVelocities(),
-                        turretVisSim.getTurretTarget(),
-                        3
-                    );
-                    return shot.getExitVelocity();
-                },
-                () -> {
-                    ShotData shot = TrajectoryCalculator.iterativeMovingShotFromFunnelClearance(
-                        drivetrain.getState().Pose,
-                        new ChassisVelocities(),
-                        turretVisSim.getTurretTarget(),
-                        3
-                    );
-                    return shot.getHoodAngle();
-                },
-                turret
-            ));
-        }
+        // if (RobotBase.isSimulation()) {
+        //     turret.setDefaultCommand(turretVisSim.repeatedlyLaunchFuel(
+        //         () -> {
+        //             ShotData shot = TrajectoryCalculator.iterativeMovingShotFromFunnelClearance(
+        //                 drivetrain.getState().Pose,
+        //                 new ChassisVelocities(),
+        //                 turretVisSim.getTurretTarget(),
+        //                 3
+        //             );
+        //             return shot.getExitVelocity();
+        //         },
+        //         () -> {
+        //             ShotData shot = TrajectoryCalculator.iterativeMovingShotFromFunnelClearance(
+        //                 drivetrain.getState().Pose,
+        //                 new ChassisVelocities(),
+        //                 turretVisSim.getTurretTarget(),
+        //                 3
+        //             );
+        //             return shot.getHoodAngle();
+        //         },
+        //         turret
+        //     ));
+        // }
         
         Tunables.publish("Reset Fuel", Commands.runOnce(() -> {
                     FuelSim.getInstance().clearFuel();
