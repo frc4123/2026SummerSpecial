@@ -115,8 +115,7 @@ public class RobotContainer {
     // private final Selectable<Command> autoChooser = new Selectable<Command>();
 
     private final CommandNiDsXboxController joystick = new CommandNiDsXboxController(InputConstants.kDriverControllerPort0);
-    private final CommandGenericHID Dpad = new CommandGenericHID(InputConstants.kDriverControllerPort0);
-
+    
     private final CommandGenericHID m_buttonBoard = new CommandGenericHID(InputConstants.kDriverControllerPort1);
 
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -329,19 +328,19 @@ public class RobotContainer {
             })
         );
 
-        Dpad.povLeft().whileTrue(drivetrain.applyRequest(() -> robotStrafe
+        joystick.getHID().povLeft().whileTrue(drivetrain.applyRequest(() -> robotStrafe
             .withVelocityY(0.1 * MaxSpeed)
             .withVelocityX(0)));
 
-        Dpad.povRight().whileTrue(drivetrain.applyRequest(() -> robotStrafe
+        joystick.getHID().povRight().whileTrue(drivetrain.applyRequest(() -> robotStrafe
             .withVelocityY(-0.1 * MaxSpeed)
             .withVelocityX(0)));
         
-        Dpad.povUp().whileTrue(drivetrain.applyRequest(() -> robotStrafe
+        joystick.getHID().povUp().whileTrue(drivetrain.applyRequest(() -> robotStrafe
             .withVelocityX(0.1 * MaxSpeed)
             .withVelocityY(0)));
 
-        Dpad.povDown().whileTrue(drivetrain.applyRequest(() -> robotStrafe
+        joystick.getHID().povDown().whileTrue(drivetrain.applyRequest(() -> robotStrafe
             .withVelocityX(-0.1 * MaxSpeed)
             .withVelocityY(0)));
 
