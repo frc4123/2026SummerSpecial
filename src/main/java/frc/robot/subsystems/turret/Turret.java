@@ -185,7 +185,7 @@ public class Turret extends SubsystemBase {
             .withMagnetSensor(magnetConfig1);
 
         turretEncoder1.getConfigurator().apply(config1);
-    
+        
         // Configure CANcoder 2
         MagnetSensorConfigs magnetConfig2 = new MagnetSensorConfigs()
         .withAbsoluteSensorDiscontinuityPoint(1.0)
@@ -196,6 +196,7 @@ public class Turret extends SubsystemBase {
         .withMagnetSensor(magnetConfig2);
     
         turretEncoder2.getConfigurator().apply(config2);
+        
     }
 
     // Call this once per periodic loop to refresh all signals
