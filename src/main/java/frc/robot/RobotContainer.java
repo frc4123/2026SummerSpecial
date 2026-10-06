@@ -27,7 +27,7 @@ import org.wpilib.command2.Commands;
 import org.wpilib.command2.ParallelCommandGroup;
 import org.wpilib.command2.RepeatCommand;
 import org.wpilib.command2.button.CommandGenericHID;
-import org.wpilib.command2.button.CommandNiDsXboxController;
+import org.wpilib.command2.button.CommandXboxController;
 import org.wpilib.command2.button.Trigger;
 // import org.wpilib.command2.ParallelCommandGroup;
 //import org.wpilib.command2.ParallelRaceGroup;
@@ -114,8 +114,7 @@ public class RobotContainer {
 
     // private final Selectable<Command> autoChooser = new Selectable<Command>();
 
-    private final CommandNiDsXboxController joystick = new CommandNiDsXboxController(InputConstants.kDriverControllerPort0);
-    private final CommandGenericHID Dpad = new CommandGenericHID(InputConstants.kDriverControllerPort0);
+    private final CommandXboxController joystick = new CommandXboxController(InputConstants.kDriverControllerPort0);
 
     private final CommandGenericHID m_buttonBoard = new CommandGenericHID(InputConstants.kDriverControllerPort1);
 
@@ -329,19 +328,19 @@ public class RobotContainer {
             })
         );
 
-        Dpad.povLeft().whileTrue(drivetrain.applyRequest(() -> robotStrafe
+        joystick.dpadLeft().whileTrue(drivetrain.applyRequest(() -> robotStrafe
             .withVelocityY(0.1 * MaxSpeed)
             .withVelocityX(0)));
 
-        Dpad.povRight().whileTrue(drivetrain.applyRequest(() -> robotStrafe
+        joystick.dpadRight().whileTrue(drivetrain.applyRequest(() -> robotStrafe
             .withVelocityY(-0.1 * MaxSpeed)
             .withVelocityX(0)));
         
-        Dpad.povUp().whileTrue(drivetrain.applyRequest(() -> robotStrafe
+        joystick.dpadUp().whileTrue(drivetrain.applyRequest(() -> robotStrafe
             .withVelocityX(0.1 * MaxSpeed)
             .withVelocityY(0)));
 
-        Dpad.povDown().whileTrue(drivetrain.applyRequest(() -> robotStrafe
+        joystick.dpadDown().whileTrue(drivetrain.applyRequest(() -> robotStrafe
             .withVelocityX(-0.1 * MaxSpeed)
             .withVelocityY(0)));
 
@@ -407,29 +406,28 @@ public class RobotContainer {
 
         upcomingShiftWarning.whileTrue(
             Commands.run(() -> {
-                joystick.getNiDsXboxController().setRumble(RumbleType.LEFT_RUMBLE, 1.0);
-                joystick.getNiDsXboxController().setRumble(RumbleType.RIGHT_RUMBLE, 1.0);
+                joystick.getHID().setRumble(RumbleType.LEFT_RUMBLE, 1.0);
+                joystick.getHID().setRumble(RumbleType.RIGHT_RUMBLE, 1.0);
             })
         );
-
         endingShiftWarning.whileTrue(
             Commands.run(() -> {
-                joystick.getNiDsXboxController().setRumble(RumbleType.LEFT_RUMBLE, 1.0);
-                joystick.getNiDsXboxController().setRumble(RumbleType.RIGHT_RUMBLE, 1.0);
+                joystick.getHID().setRumble(RumbleType.LEFT_RUMBLE, 1.0);
+                joystick.getHID().setRumble(RumbleType.RIGHT_RUMBLE, 1.0);
             })
         );
 
         upcomingShiftWarning.onFalse(
             Commands.runOnce(() -> {
-                joystick.getNiDsXboxController().setRumble(RumbleType.LEFT_RUMBLE, 0);
-                joystick.getNiDsXboxController().setRumble(RumbleType.RIGHT_RUMBLE, 0);
+                joystick.getHID().setRumble(RumbleType.LEFT_RUMBLE, 0);
+                joystick.getHID().setRumble(RumbleType.RIGHT_RUMBLE, 0);
             })
         );
 
         endingShiftWarning.onFalse(
             Commands.run(() -> {
-                joystick.getNiDsXboxController().setRumble(RumbleType.LEFT_RUMBLE, 0);
-                joystick.getNiDsXboxController().setRumble(RumbleType.RIGHT_RUMBLE, 0);
+                joystick.getHID().setRumble(RumbleType.LEFT_RUMBLE, 0);
+                joystick.getHID().setRumble(RumbleType.RIGHT_RUMBLE, 0);
             })
         );
     }
