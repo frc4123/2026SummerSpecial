@@ -31,9 +31,6 @@ import org.wpilib.driverstation.MatchState;
 import org.wpilib.driverstation.RobotState;
 import org.wpilib.fields.Fields;
 import org.wpilib.driverstation.Alliance;
-// import org.wpilib.driverstation.MatchType;
-// import org.wpilib.driverstation.DriverStationErrors;
-// import org.wpilib.driverstation.Alliance;
 import org.wpilib.command2.SubsystemBase;
 
 import frc.robot.Constants.TurretConstants;
@@ -59,10 +56,19 @@ public class Vision extends SubsystemBase {
     // private final StructPublisher<Transform3d> CamTargetTransformPublisher;
 
     
-    private final PhotonCamera FLO_camera = new PhotonCamera("Front_Left_Outside");
-    private final PhotonCamera FLI_camera = new PhotonCamera("Front_Left_Inside");
-    private final PhotonCamera FRI_camera = new PhotonCamera("Front_Right_Inside");
-    private final PhotonCamera FRO_camera = new PhotonCamera("Front_Right_Outside");
+    private final PhotonCamera FLO_camera = makeCamera("Front_Left_Outside");
+    private final PhotonCamera FLI_camera = makeCamera("Front_Left_Inside");
+    private final PhotonCamera FRI_camera = makeCamera("Front_Right_Inside");
+    private final PhotonCamera FRO_camera = makeCamera("Front_Right_Outside");
+
+    private static PhotonCamera makeCamera(String name) {
+        try {
+            return new PhotonCamera(name);
+        } catch (Throwable t) {
+            System.err.println("PhotonCamera '" + name + "' failed to load: " + t);
+            return null;
+        }
+    }
 
     private final PhotonPoseEstimator FLO_Estimator;
     private final PhotonPoseEstimator FLI_Estimator;
@@ -330,10 +336,10 @@ public class Vision extends SubsystemBase {
     }
 
     public int avoidDisconnectedCams(int camToChoose){
-        if(camToChoose == 0 && !FLO_camera.isConnected()){camToChoose++;}
-        if(camToChoose == 1 && !FLI_camera.isConnected()){camToChoose++;}
-        if(camToChoose == 2 && !FRI_camera.isConnected()){camToChoose++;}
-        if(camToChoose == 3 && !FRO_camera.isConnected()){camToChoose++;}
+        if(camToChoose == 0 && (FLO_camera == null || !FLO_camera.isConnected())){camToChoose++;}
+        if(camToChoose == 1 && (FLI_camera == null || !FLI_camera.isConnected())){camToChoose++;}
+        if(camToChoose == 2 && (FRI_camera == null || !FRI_camera.isConnected())){camToChoose++;}
+        if(camToChoose == 3 && (FRO_camera == null || !FRO_camera.isConnected())){camToChoose++;}
         return camToChoose;
     }
 
