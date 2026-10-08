@@ -8,11 +8,12 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
-import com.ctre.phoenix6.controls.DynamicMotionMagicTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -78,12 +79,13 @@ public class Turret extends SubsystemBase {
     private EasyCRT easyCrtSolver;
 
     // Motion Magic controller object
-    private final DynamicMotionMagicTorqueCurrentFOC motionMagic =
-            new DynamicMotionMagicTorqueCurrentFOC(
-                TurretConstants.stowPosition,
-                TurretConstants.velocity,
-                TurretConstants.acceleration
+    private final MotionMagicTorqueCurrentFOC motionMagic =
+            new MotionMagicTorqueCurrentFOC(
+                TurretConstants.stowPosition
             );
+    private final MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs()
+        .withMotionMagicCruiseVelocity(TurretConstants.velocity)
+        .withMotionMagicAcceleration(TurretConstants.acceleration);
 
     // Make sure these are initialized in your constructor:
     //private final StatusSignal<Angle> motorPositionSignal = turretMotor.getPosition();
@@ -172,6 +174,7 @@ public class Turret extends SubsystemBase {
         turretMotor.getConfigurator().apply(pid);
         turretMotor.getConfigurator().apply(motorOutput);
         turretMotor.getConfigurator().apply(torqueDeadband);
+        turretMotor.getConfigurator().apply(motionMagicConfigs);
     }
 
     private void configureCANcoders() {

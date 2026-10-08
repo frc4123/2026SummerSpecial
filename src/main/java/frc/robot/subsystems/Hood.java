@@ -4,7 +4,7 @@ import static org.wpilib.units.Units.Degrees;
 
 import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.controls.DynamicMotionMagicTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -34,18 +34,14 @@ public class Hood extends SubsystemBase{
 
     private StatusSignal<Boolean> s2Signal = hoodCANdi.getS2Closed();
 
-    private final DynamicMotionMagicTorqueCurrentFOC motionMagic =
-        new DynamicMotionMagicTorqueCurrentFOC(
-            HoodConstants.stowPosition,
-            HoodConstants.velocity,
-            HoodConstants.acceleration
+    private final MotionMagicTorqueCurrentFOC motionMagic =
+        new MotionMagicTorqueCurrentFOC(
+            HoodConstants.stowPosition
         );
 
-    private final DynamicMotionMagicTorqueCurrentFOC motionMagicFree =
-        new DynamicMotionMagicTorqueCurrentFOC(
-            HoodConstants.stowPosition,
-            HoodConstants.slowVelocity,
-            HoodConstants.acceleration
+    private final MotionMagicTorqueCurrentFOC motionMagicFree =
+        new MotionMagicTorqueCurrentFOC(
+            HoodConstants.stowPosition
         );
 
     public Hood() {
