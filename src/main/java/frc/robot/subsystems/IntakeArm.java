@@ -6,11 +6,12 @@ import frc.robot.Constants.IntakeArmConstants;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
-import com.ctre.phoenix6.controls.DynamicMotionMagicTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -35,25 +36,24 @@ public class IntakeArm extends SubsystemBase {
     private boolean hasZeroed = false;
 
     // Motion Magic controller object
-    private final DynamicMotionMagicTorqueCurrentFOC motionMagic =
-        new DynamicMotionMagicTorqueCurrentFOC(
-            IntakeArmConstants.stowPosition,
-            IntakeArmConstants.velocity,
-            IntakeArmConstants.acceleration
+    private final MotionMagicTorqueCurrentFOC motionMagic =
+        new MotionMagicTorqueCurrentFOC(
+            IntakeArmConstants.stowPosition
         );
 
-    private final DynamicMotionMagicTorqueCurrentFOC slowMotionMagic =
-        new DynamicMotionMagicTorqueCurrentFOC(
-            IntakeArmConstants.stowPosition,
-            IntakeArmConstants.slowVelocity,
-            IntakeArmConstants.acceleration
+    private final MotionMagicTorqueCurrentFOC slowMotionMagic =
+        new MotionMagicTorqueCurrentFOC(
+            IntakeArmConstants.stowPosition
         );
 
-        private final DynamicMotionMagicTorqueCurrentFOC midMotionMagic =
-        new DynamicMotionMagicTorqueCurrentFOC(
-            IntakeArmConstants.stowPosition,
-            IntakeArmConstants.midVelocity,
-            IntakeArmConstants.acceleration
+        private final MotionMagicTorqueCurrentFOC midMotionMagic =
+        new MotionMagicTorqueCurrentFOC(
+            IntakeArmConstants.stowPosition
+        );
+    private final MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs()
+        .withMotionMagicCruiseVelocity(IntakeArmConstants.velocity)
+        .withMotionMagicAcceleration(IntakeArmConstants.acceleration
+
         );
         
     public IntakeArm(){
@@ -89,6 +89,7 @@ public class IntakeArm extends SubsystemBase {
         intakeArmMotor.getConfigurator().apply(feedbackUnits);
         intakeArmMotor.getConfigurator().apply(motorOutput);
         intakeArmMotor.getConfigurator().apply(torqueDeadband);
+        intakeArmMotor.getConfigurator().apply(motionMagicConfigs);
     }
 
     public void setIntakePosition(double pos){
