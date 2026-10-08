@@ -25,7 +25,7 @@ public class Shooter extends SubsystemBase{
 
     private final TalonFX shooterMotor = new TalonFX(
         Constants.CanIdSystemCore.Shooter,
-        Constants.CanIdSystemCore.canbus2
+        Constants.CanIdSystemCore.canbus4
     );
 
     private final VelocityTorqueCurrentFOC motionMagic =

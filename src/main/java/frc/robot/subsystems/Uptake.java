@@ -24,7 +24,7 @@ public class Uptake extends SubsystemBase{
 
     private final TalonFX uptakeMotor = new TalonFX(
         Constants.CanIdSystemCore.Uptake,
-        Constants.CanIdSystemCore.canbus2
+        Constants.CanIdSystemCore.canbus4
     );
 
     private final MotionMagicVelocityVoltage motionMagic =

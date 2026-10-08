@@ -35,7 +35,8 @@ public class Constants {
 
     public static final class CanIdSystemCore { 
 
-        public static final CANBus canbus2 = new CANBus(CANPort.CAN_S2); // non swerve canbus
+        public static final CANBus canbus4 = new CANBus(CANPort.CAN_S4); // non swerve canbus
+        public static final CANBus canbus0 = new CANBus(CANPort.CAN_S0); // swerve canbus
 
         public static final int Front_Left_Drive = 2;
         public static final int Front_Right_Drive = 3;
@@ -118,7 +119,7 @@ public class Constants {
 
         public static final CANdi intakeCANdi = new CANdi(
             Constants.CanIdSystemCore.Intake_CANdi,
-            Constants.CanIdSystemCore.canbus2
+            Constants.CanIdSystemCore.canbus4
         );
 
         static {

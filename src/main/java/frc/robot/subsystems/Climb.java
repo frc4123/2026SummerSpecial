@@ -17,7 +17,7 @@ public class Climb extends SubsystemBase{
 
     private final TalonFX climbMotor = new TalonFX(
         Constants.CanIdSystemCore.Climb,
-        Constants.CanIdSystemCore.canbus2
+        Constants.CanIdSystemCore.canbus4
     );
 
     // Motion Magic controller object

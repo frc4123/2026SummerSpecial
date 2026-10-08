@@ -25,7 +25,7 @@ public class IntakeArm extends SubsystemBase {
 
     private final TalonFX intakeArmMotor = new TalonFX(
         Constants.CanIdSystemCore.Intake_Arm,
-        Constants.CanIdSystemCore.canbus2
+        Constants.CanIdSystemCore.canbus4
     );
 
     private final CANdi intakeCANdi = IntakeArmConstants.intakeCANdi;

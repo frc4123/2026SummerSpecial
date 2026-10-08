@@ -27,7 +27,7 @@ public class Hood extends SubsystemBase{
 
     private final TalonFX hoodMotor = new TalonFX(
         Constants.CanIdSystemCore.Hood,
-        Constants.CanIdSystemCore.canbus2
+        Constants.CanIdSystemCore.canbus4
     );
     
     private final CANdi hoodCANdi = IntakeArmConstants.intakeCANdi;

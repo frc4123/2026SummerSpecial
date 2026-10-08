@@ -18,7 +18,7 @@ public class SevenEleven extends SubsystemBase{
 
     private final TalonFX sevenElevenMotor = new TalonFX(
         Constants.CanIdSystemCore.SevenEleven,
-        Constants.CanIdSystemCore.canbus2
+        Constants.CanIdSystemCore.canbus0
     );
 
     private final MotionMagicVelocityVoltage motionMagic =

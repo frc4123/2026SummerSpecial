@@ -57,11 +57,11 @@ import yams.units.EasyCRTConfig;
 public class Turret extends SubsystemBase {
 
     // Motor controlling turret rotation
-    private final TalonFX turretMotor = new TalonFX(Constants.CanIdSystemCore.Turret, Constants.CanIdSystemCore.canbus2);
+    private final TalonFX turretMotor = new TalonFX(Constants.CanIdSystemCore.Turret, Constants.CanIdSystemCore.canbus4);
 
     // Absolute turret encoder
-    private final CANcoder turretEncoder1 = new CANcoder(Constants.CanIdSystemCore.Turret_Encoder1, Constants.CanIdSystemCore.canbus2);
-    private final CANcoder turretEncoder2 = new CANcoder(Constants.CanIdSystemCore.Turret_Encoder2, Constants.CanIdSystemCore.canbus2   );
+    private final CANcoder turretEncoder1 = new CANcoder(Constants.CanIdSystemCore.Turret_Encoder1, Constants.CanIdSystemCore.canbus4);
+    private final CANcoder turretEncoder2 = new CANcoder(Constants.CanIdSystemCore.Turret_Encoder2, Constants.CanIdSystemCore.canbus4);
 
     private static boolean isBlue = false;
     private static boolean isRed = false;
