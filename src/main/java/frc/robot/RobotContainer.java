@@ -20,9 +20,9 @@ import org.wpilib.driverstation.GenericHID.RumbleType;
 // import org.wpilib.framework.RobotBase;
 import org.wpilib.system.Timer;
 
-// import org.wpilib.tunable.Selectable;
+import org.wpilib.tunable.Selectable;
 import org.wpilib.tunable.Tunables;
-// import org.wpilib.command2.Command;
+import org.wpilib.command2.Command;
 import org.wpilib.command2.Commands;
 import org.wpilib.command2.ParallelCommandGroup;
 import org.wpilib.command2.RepeatCommand;
@@ -30,9 +30,9 @@ import org.wpilib.command2.button.CommandGenericHID;
 import org.wpilib.command2.button.CommandXboxController;
 import org.wpilib.command2.button.Trigger;
 // import org.wpilib.command2.ParallelCommandGroup;
-//import org.wpilib.command2.ParallelRaceGroup;
+// import org.wpilib.command2.ParallelRaceGroup;
 // import org.wpilib.command2.RepeatCommand;
-// import org.wpilib.command2.SequentialCommandGroup;
+import org.wpilib.command2.SequentialCommandGroup;
 import org.wpilib.command2.WaitCommand;
 
 import frc.robot.generated.TunerConstants;
@@ -56,11 +56,11 @@ import frc.robot.Constants.InputConstants;
 import frc.robot.Constants.Sim;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.Sim.Mode;
-// import frc.robot.commands.autos.CityBoyLeft;
-// import frc.robot.commands.autos.CityBoyRight;
-// import frc.robot.commands.autos.MadTown;
-// import frc.robot.commands.autos.mtest;
-// import frc.robot.commands.autos.orbit;
+import frc.robot.commands.autos.CityBoyLeft;
+import frc.robot.commands.autos.CityBoyRight;
+import frc.robot.commands.autos.MadTown;
+import frc.robot.commands.autos.mtest;
+import frc.robot.commands.autos.orbit;
 import frc.robot.commands.hood.AvoidDecapitation;
 import frc.robot.commands.hood.HoodAim;
 import frc.robot.commands.intakeArm.ForceIntakeArmMid;
@@ -112,7 +112,7 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    // private final Selectable<Command> autoChooser = new Selectable<Command>();
+    private final Selectable<Command> autoChooser = new Selectable<Command>();
 
     private final CommandXboxController joystick = new CommandXboxController(InputConstants.kDriverControllerPort0);
     private final CommandGenericHID Dpad = new CommandGenericHID(InputConstants.kDriverControllerPort0);
@@ -216,7 +216,7 @@ public class RobotContainer {
         // NamedCommands.registerCommand("ClimbUp", climbUp);
         // NamedCommands.registerCommand("ClimbDown", climbDown);
 
-        // initializeAutoChooser();
+        initializeAutoChooser();
     }
 
     private double applyDeadband(double value, double deadband) {
@@ -499,44 +499,44 @@ public class RobotContainer {
     }
 
 
-//     public void initializeAutoChooser() {
-//         autoChooser.addDefault("super secret auto", 
-//         new WaitCommand(5));
+    public void initializeAutoChooser() {
+        autoChooser.addDefault("super secret auto", 
+        new WaitCommand(5));
         
-//         autoChooser.add("City Boy Left", new ParallelCommandGroup(
-//             new WaitCommand(0.01),
-//             new SequentialCommandGroup(new CityBoyLeft().cityBoyLeft())
-//         ));
+        autoChooser.add("City Boy Left", new ParallelCommandGroup(
+            new WaitCommand(0.01),
+            new SequentialCommandGroup(new CityBoyLeft().cityBoyLeft())
+        ));
 
-//         autoChooser.add("City Boy Right", new ParallelCommandGroup(
-//             new WaitCommand(0.01),
-//             new SequentialCommandGroup(new CityBoyRight().cityBoyRight())
-//         ));
+        autoChooser.add("City Boy Right", new ParallelCommandGroup(
+            new WaitCommand(0.01),
+            new SequentialCommandGroup(new CityBoyRight().cityBoyRight())
+        ));
 
-//         autoChooser.add("MadTown Left", new ParallelCommandGroup(
-//             new WaitCommand(0.01),
-//             new SequentialCommandGroup(new MadTown().madTownLeft())
-//         ));
+        autoChooser.add("MadTown Left", new ParallelCommandGroup(
+            new WaitCommand(0.01),
+            new SequentialCommandGroup(new MadTown().madTownLeft())
+        ));
 
-//         autoChooser.add("Orbit Right", new ParallelCommandGroup(
-//             new WaitCommand(0.01),
-//             new SequentialCommandGroup(new orbit().orbitRight())
-//         ));
+        autoChooser.add("Orbit Right", new ParallelCommandGroup(
+            new WaitCommand(0.01),
+            new SequentialCommandGroup(new orbit().orbitRight())
+        ));
 
-//         autoChooser.add("Orbit Right Delay", new SequentialCommandGroup(
-//             new WaitCommand(4).andThen(new orbit().orbitRight())
-//         ));
+        autoChooser.add("Orbit Right Delay", new SequentialCommandGroup(
+            new WaitCommand(4).andThen(new orbit().orbitRight())
+        ));
 
-//         autoChooser.add("5m test", new ParallelCommandGroup(
-//             new WaitCommand(0.01),
-//             new SequentialCommandGroup(new mtest().metertest())
-//         ));
+        autoChooser.add("5m test", new ParallelCommandGroup(
+            new WaitCommand(0.01),
+            new SequentialCommandGroup(new mtest().metertest())
+        ));
 
-//         Tunables.publish("Auto Selector", autoChooser);
-//     }
+        Tunables.publish("Auto Selector", autoChooser);
+    }
 
-//     public Command getAutonomousCommand() {
-//         return autoChooser.getSelected();
-//     }
+    public Command getAutonomousCommand() {
+        return autoChooser.getSelected();
+    }
 }
 
