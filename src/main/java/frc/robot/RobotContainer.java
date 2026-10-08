@@ -114,7 +114,7 @@ public class RobotContainer {
 
     // private final Selectable<Command> autoChooser = new Selectable<Command>();
 
-    private final CommandNiDsXboxController joystick = new CommandNiDsXboxController(InputConstants.kDriverControllerPort0);
+    private final CommandXboxController joystick = new CommandXboxController(InputConstants.kDriverControllerPort0);
     private final CommandGenericHID Dpad = new CommandGenericHID(InputConstants.kDriverControllerPort0);
 
     private final CommandGenericHID m_buttonBoard = new CommandGenericHID(InputConstants.kDriverControllerPort1);
