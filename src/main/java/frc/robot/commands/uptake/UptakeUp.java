@@ -21,7 +21,7 @@ public class UptakeUp extends Command{
         this.turret = turret;
         this.sevenEleven = sevenEleven;
         this.shooter = shooter;
-        addRequirements(uptake);
+        addRequirements(uptake, sevenEleven);
     }
 
     @Override

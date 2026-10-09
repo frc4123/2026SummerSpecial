@@ -129,7 +129,7 @@ public class Constants {
             intakeCANdi.optimizeBusUtilization();
         }
        
-        public static final double outPosition = 0;
+        public static final double outPosition = -0.02;
         public static final double stowPosition = 0.33;
         public static final double midPosition = stowPosition / 1.7;
 
