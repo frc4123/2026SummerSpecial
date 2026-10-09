@@ -3,18 +3,15 @@ package frc.robot;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.networktables.DoubleArrayPublisher;
 import org.wpilib.networktables.NetworkTable;
 import org.wpilib.networktables.NetworkTableInstance;
+import org.wpilib.networktables.StringPublisher;
 import org.wpilib.networktables.StructPublisher;
-import org.wpilib.smartdashboard.Field2d;
-// import frc.robot.subsystems.CommandSwerveDrivetrain;
-
 
 import org.littletonrobotics.junction.Logger;
 
 public class Telemetry {
-
-    private final Field2d m_field = new Field2d();
 
     private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
     private final NetworkTable driveStateTable = inst.getTable("DriveState");
@@ -22,14 +19,19 @@ public class Telemetry {
     private final StructPublisher<Pose2d> drivePose =
         driveStateTable.getStructTopic("Pose", Pose2d.struct).publish();
 
+    // Field widget in the old Field2d format that Elastic reads
+    private final NetworkTable fieldTable = inst.getTable("SmartDashboard/Field");
+    private final StringPublisher fieldType = fieldTable.getStringTopic(".type").publish();
+    private final DoubleArrayPublisher fieldRobot = fieldTable.getDoubleArrayTopic("Robot").publish();
+
     public Telemetry(double maxSpeed) {
-        org.wpilib.telemetry.Telemetry.log("Robot Field", m_field);
+        fieldType.set("Field2d");
     }
 
     public void telemeterize(SwerveDriveState state) {
         Pose2d pose = state.Pose;
         drivePose.set(pose);
-        m_field.setRobotPose(pose);
+        fieldRobot.set(new double[] {pose.getX(), pose.getY(), pose.getRotation().getDegrees()});
         Logger.recordOutput("Drive/Pose", pose);
         org.wpilib.telemetry.Telemetry.log("Debug/PoseX", pose.getX());
         org.wpilib.telemetry.Telemetry.log("Debug/PoseY", pose.getY());
