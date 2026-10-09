@@ -13,6 +13,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import java.lang.Math;
 
+import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.kinematics.ChassisVelocities;
@@ -46,6 +47,7 @@ import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TrajectoryCalculator;
 import frc.robot.subsystems.turret.TrajectoryCalculator.ShotData;
 import frc.robot.subsystems.turret.TurretVisSim;
+import frc.robot.utils.Field;
 import frc.robot.utils.FuelSim;
 import frc.robot.utils.ShiftHelpers;
 import frc.robot.utils.Target;
@@ -297,8 +299,11 @@ public class RobotContainer {
         // joystick.povDown().whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         // joystick.povLeft().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        // Reset the field-centric heading on button Y press.
-        joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+        // Reset the field-centric heading on left bumper press.
+        joystick.leftBumper().onTrue(drivetrain.runOnce(() -> {
+            Rotation2d facing = Field.isBlue() ? Rotation2d.ZERO : Rotation2d.k180deg;
+            drivetrain.resetPose(new Pose2d(drivetrain.getState().Pose.getTranslation(), facing));
+        }));
 
         joystick.a().whileTrue(
             drivetrain.applyRequest(() -> {
