@@ -27,6 +27,10 @@ import org.wpilib.math.geometry.Transform3d;
 import org.wpilib.math.geometry.Translation3d;
 import org.wpilib.math.numbers.N1;
 import org.wpilib.math.numbers.N3;
+import org.wpilib.telemetry.Telemetry;
+
+import com.ctre.phoenix6.Utils;
+
 import org.wpilib.driverstation.MatchState;
 import org.wpilib.driverstation.RobotState;
 import org.wpilib.fields.Fields;
@@ -85,7 +89,13 @@ public class Vision extends SubsystemBase {
 
     public Vision() {
         this.aprilTagFieldLayout = org.wpilib.fields.Field.loadField(Fields.DEFAULT_FIELD);
-        
+       //temporary 
+        for (int id : new int[] {18, 21, 26, 2, 5, 10}) {
+            aprilTagFieldLayout.getTagPose(id).ifPresent(p ->
+                System.out.println("Tag " + id + ": x=" + p.getX() + " y=" + p.getY()
+                    + " deg=" + p.getRotation().toRotation2d().getDegrees()));
+        }
+
         // Camera transforms
         FLO_robotToCam = new Transform3d(
             new Translation3d(
@@ -214,12 +224,19 @@ public class Vision extends SubsystemBase {
             if(isEstOffField(est)){return;}
 
             Matrix<N3, N1> stdDevs = calculateStdDevs(est, validTargets);
-
-            // swerve.addVisionMeasurement(
-            //     est.estimatedPose.toPose2d(),
-            //     est.timestampSeconds,
-            //     stdDevs
-            // );
+            // cancel out vision to see if they are the problem
+            swerve.addVisionMeasurement(
+                est.estimatedPose.toPose2d(),
+                est.timestampSeconds,
+                VecBuilder.fill(stdDevs.get(0, 0), stdDevs.get(1, 0), 1e9)
+            );
+            // vision debug 
+            Telemetry.log("Vision/Cam", camToChoose);
+            Telemetry.log("Vision/TagId", result.getBestTarget().getFiducialId());
+            Telemetry.log("Vision/EstX", est.estimatedPose.getX());
+            Telemetry.log("Vision/EstY", est.estimatedPose.getY());
+            Telemetry.log("Vision/EstDeg", est.estimatedPose.toPose2d().getRotation().getDegrees());
+            Telemetry.log("Vision/LatencySec", Utils.getCurrentTimeSeconds() - est.timestampSeconds);
         }
     }
 

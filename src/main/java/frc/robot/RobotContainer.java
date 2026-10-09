@@ -221,6 +221,45 @@ public class RobotContainer {
         if (Math.abs(value) < deadband) return 0.0;
         return value;
     }
+    
+      private Pose2d resetPosetoNearestTrench() {
+        Pose2d current = drivetrain.getState().Pose;
+
+        final double fieldWidth = Constants.FieldConstants.FIELD_WIDTH.in(Meters);
+        final double trenchHalfDepth = Inches.of(47.0).in(Meters) / 2.0;   // trench depth along X
+        final double laneWidth = Inches.of(50.34).in(Meters);              // opening under the trench arm (Y)
+        final double robotHalfLength = Constants.Sim.fullLength / 2.0;
+        final double robotHalfWidth = Constants.Sim.fullWidth / 2.0;
+
+        // 1) Alliance's trench: the one with the nearest X (blue hub X or red hub X)
+        double blueX = Constants.VisionConstants.blueHub.getX();
+        double redX = Constants.VisionConstants.redHub.getX();
+        double cx = Math.abs(current.getX() - blueX) < Math.abs(current.getX() - redX) ? blueX : redX;
+
+        // 2) Lane: bottom or top, and the band the robot's center can physically be in
+        boolean bottom = current.getY() < fieldWidth / 2.0;
+        double minY = bottom ? robotHalfWidth : fieldWidth - laneWidth + robotHalfWidth;
+        double maxY = bottom ? laneWidth - robotHalfWidth : fieldWidth - robotHalfWidth;
+
+        // Ignore the press if we're not roughly lined up with the lane
+        double yError = current.getY() < minY ? minY - current.getY()
+                      : current.getY() > maxY ? current.getY() - maxY : 0.0;
+        if (yError > 0.8) return current;
+
+        // Y: keep odometry's value if it's physically possible, otherwise pull it into the lane
+        double newY = Math.max(minY, Math.min(maxY, current.getY()));
+
+        // 3) Side of the trench, from position (alliance color and intake direction don't matter)
+        double side = current.getX() >= cx ? 1.0 : -1.0;
+        double entryX = cx + side * (trenchHalfDepth + robotHalfLength);
+
+        // X: snap to the entrance spot only if we're close to it, otherwise keep odometry's X
+        double newX = Math.abs(current.getX() - entryX) < 0.6 ? entryX : current.getX();
+
+        Pose2d fixed = new Pose2d(newX, newY, current.getRotation());
+        drivetrain.resetPose(fixed);
+        return fixed;
+    }
 
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
@@ -257,9 +296,12 @@ public class RobotContainer {
 
         joystick.b().onTrue(
             Commands.runOnce(() -> {
-                snappedAngle[0] = Target.getTrenchAngle(
-                    drivetrain.getState().Pose.getTranslation().getX()
-                );
+                Pose2d fixedPose =resetPosetoNearestTrench();
+                snappedAngle[0] = 
+                    Target.getTrenchAngle(fixedPose.getTranslation().getX());
+
+                ;
+            
             })
         );
 
@@ -299,15 +341,8 @@ public class RobotContainer {
         // joystick.povLeft().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // Reset the field-centric heading on button Y press.
-        joystick.leftBumper().onTrue(drivetrain.runOnce(() -> {
-            // Press with the INTAKE end pointing away from the driver station
-            boolean blue = org.wpilib.driverstation.MatchState.getAlliance()
-                .orElse(org.wpilib.driverstation.Alliance.BLUE) == org.wpilib.driverstation.Alliance.BLUE;
-            drivetrain.resetPose(new Pose2d(
-                drivetrain.getState().Pose.getTranslation(),
-                blue ? Rotation2d.k180deg : Rotation2d.ZERO));
-        }));
-        
+        joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+
         joystick.a().whileTrue(
             drivetrain.applyRequest(() -> {
                 double leftY = -joystick.getLeftY();
@@ -431,7 +466,7 @@ public class RobotContainer {
         );
 
         endingShiftWarning.onFalse(
-            Commands.run(() -> {
+            Commands.runOnce(() -> {
                 joystick.getHID().setRumble(RumbleType.LEFT_RUMBLE, 0);
                 joystick.getHID().setRumble(RumbleType.RIGHT_RUMBLE, 0);
             })

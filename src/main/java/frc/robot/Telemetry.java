@@ -2,6 +2,9 @@ package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
+import frc.robot.utils.Field;
+
+import org.wpilib.driverstation.MatchState;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.networktables.DoubleArrayPublisher;
 import org.wpilib.networktables.NetworkTable;
@@ -36,5 +39,9 @@ public class Telemetry {
         org.wpilib.telemetry.Telemetry.log("Debug/PoseX", pose.getX());
         org.wpilib.telemetry.Telemetry.log("Debug/PoseY", pose.getY());
         org.wpilib.telemetry.Telemetry.log("Debug/PoseDeg", pose.getRotation().getDegrees());
+        org.wpilib.telemetry.Telemetry.log("Debug/FieldisBlue", Field.isBlue());
+        org.wpilib.telemetry.Telemetry.log("Debug/MatchStateAlliance", 
+        MatchState.getAlliance().map(Object::toString).orElse("none"));
+        
     }
 }
