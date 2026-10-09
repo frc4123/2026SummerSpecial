@@ -24,10 +24,10 @@ public class IntakeRoller extends SubsystemBase{
         Constants.CanIdSystemCore.Left_Intake_Roller,
         Constants.CanIdSystemCore.canbus4
     );
-    private final TalonFX rightIntakeRollerMotor = new TalonFX(
-        Constants.CanIdSystemCore.Right_Intake_Roller,
-        Constants.CanIdSystemCore.canbus4
-    );
+    // private final TalonFX rightIntakeRollerMotor = new TalonFX(
+    //     Constants.CanIdSystemCore.Right_Intake_Roller,
+    //     Constants.CanIdSystemCore.canbus4
+    // );
   
     // Motion Magic controller object
 
