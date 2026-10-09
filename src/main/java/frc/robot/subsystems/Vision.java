@@ -44,6 +44,8 @@ import frc.robot.utils.Field;
 
 public class Vision extends SubsystemBase {
 
+    private static final boolean VISION_ENABLED = false;
+
     private final Transform3d FLO_robotToCam;
     private final Transform3d FLI_robotToCam;
     private final Transform3d FRI_robotToCam;
@@ -66,6 +68,7 @@ public class Vision extends SubsystemBase {
     private final PhotonCamera FRO_camera = makeCamera("Front_Right_Outside");
 
     private static PhotonCamera makeCamera(String name) {
+        if (!VISION_ENABLED) return null;
         try {
             return new PhotonCamera(name);
         } catch (Throwable t) {
@@ -362,6 +365,7 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if (!VISION_ENABLED) return;
         camToChoose = camProcessorCounter % 4;
         camToChoose = avoidDisconnectedCams(camToChoose);
 
