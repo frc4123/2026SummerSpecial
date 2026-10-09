@@ -215,11 +215,11 @@ public class Vision extends SubsystemBase {
 
             Matrix<N3, N1> stdDevs = calculateStdDevs(est, validTargets);
 
-            swerve.addVisionMeasurement(
-                est.estimatedPose.toPose2d(),
-                est.timestampSeconds,
-                stdDevs
-            );
+            // swerve.addVisionMeasurement(
+            //     est.estimatedPose.toPose2d(),
+            //     est.timestampSeconds,
+            //     stdDevs
+            // );
         }
     }
 
