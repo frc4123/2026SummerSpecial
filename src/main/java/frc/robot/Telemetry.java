@@ -7,7 +7,7 @@ import org.wpilib.networktables.NetworkTable;
 import org.wpilib.networktables.NetworkTableInstance;
 import org.wpilib.networktables.StructPublisher;
 import org.wpilib.smartdashboard.Field2d;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
+// import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 
 import org.littletonrobotics.junction.Logger;
@@ -27,8 +27,12 @@ public class Telemetry {
     }
 
     public void telemeterize(SwerveDriveState state) {
-        drivePose.set(CommandSwerveDrivetrain.getInstance().getState().Pose);
-        m_field.setRobotPose(CommandSwerveDrivetrain.getInstance().getState().Pose);
-        Logger.recordOutput("Drive/Pose", CommandSwerveDrivetrain.getInstance().getState().Pose);
+        Pose2d pose = state.Pose;
+        drivePose.set(pose);
+        m_field.setRobotPose(pose);
+        Logger.recordOutput("Drive/Pose", pose);
+        org.wpilib.telemetry.Telemetry.log("Debug/PoseX", pose.getX());
+        org.wpilib.telemetry.Telemetry.log("Debug/PoseY", pose.getY());
+        org.wpilib.telemetry.Telemetry.log("Debug/PoseDeg", pose.getRotation().getDegrees());
     }
 }

@@ -431,14 +431,10 @@ public class Turret extends SubsystemBase {
     }
 
     public void checkDS(){
-        if(isBlue == false && isRed == false){
-            if(RobotState.isDSAttached()){
-                isBlue = MatchState.getAlliance().get() == Alliance.BLUE ? true : false;
-                isRed = MatchState.getAlliance().get() == Alliance.RED ? true : false;
-            } else {
-                isBlue = false;
-                isRed = false;
-            }
+        var alliance = MatchState.getAlliance();
+        if (alliance.isPresent()) {
+            isBlue = alliance.get() == Alliance.BLUE;
+            isRed = alliance.get() == Alliance.RED;
         }
     }
 
