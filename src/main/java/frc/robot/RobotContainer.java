@@ -47,7 +47,6 @@ import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TrajectoryCalculator;
 import frc.robot.subsystems.turret.TrajectoryCalculator.ShotData;
 import frc.robot.subsystems.turret.TurretVisSim;
-import frc.robot.utils.Field;
 import frc.robot.utils.FuelSim;
 import frc.robot.utils.ShiftHelpers;
 import frc.robot.utils.Target;
@@ -299,12 +298,16 @@ public class RobotContainer {
         // joystick.povDown().whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         // joystick.povLeft().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        // Reset the field-centric heading on left bumper press.
+        // Reset the field-centric heading on button Y press.
         joystick.leftBumper().onTrue(drivetrain.runOnce(() -> {
-            Rotation2d facing = Field.isBlue() ? Rotation2d.ZERO : Rotation2d.k180deg;
-            drivetrain.resetPose(new Pose2d(drivetrain.getState().Pose.getTranslation(), facing));
+            // Press with the INTAKE end pointing away from the driver station
+            boolean blue = org.wpilib.driverstation.MatchState.getAlliance()
+                .orElse(org.wpilib.driverstation.Alliance.BLUE) == org.wpilib.driverstation.Alliance.BLUE;
+            drivetrain.resetPose(new Pose2d(
+                drivetrain.getState().Pose.getTranslation(),
+                blue ? Rotation2d.k180deg : Rotation2d.ZERO));
         }));
-
+        
         joystick.a().whileTrue(
             drivetrain.applyRequest(() -> {
                 double leftY = -joystick.getLeftY();
