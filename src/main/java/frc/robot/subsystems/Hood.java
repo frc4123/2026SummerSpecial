@@ -4,9 +4,10 @@ import static org.wpilib.units.Units.Degrees;
 
 import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.controls.DynamicMotionMagicTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
@@ -34,19 +35,21 @@ public class Hood extends SubsystemBase{
 
     private StatusSignal<Boolean> s2Signal = hoodCANdi.getS2Closed();
 
-    private final DynamicMotionMagicTorqueCurrentFOC motionMagic =
-        new DynamicMotionMagicTorqueCurrentFOC(
-            HoodConstants.stowPosition,
-            HoodConstants.velocity,
-            HoodConstants.acceleration
+    private final MotionMagicTorqueCurrentFOC motionMagic =
+        new MotionMagicTorqueCurrentFOC(
+            HoodConstants.MIN_HOOD_ANGLE
         );
 
-    private final DynamicMotionMagicTorqueCurrentFOC motionMagicFree =
-        new DynamicMotionMagicTorqueCurrentFOC(
-            HoodConstants.stowPosition,
-            HoodConstants.slowVelocity,
-            HoodConstants.acceleration
+    private final MotionMagicTorqueCurrentFOC motionMagicFree =
+        new MotionMagicTorqueCurrentFOC(
+            HoodConstants.MIN_HOOD_ANGLE
         );
+    private final MotionMagicConfigs magicConfigs =
+        new MotionMagicConfigs()
+            .withMotionMagicCruiseVelocity(HoodConstants.velocity)
+            .withMotionMagicAcceleration(HoodConstants.acceleration)
+        ;
+        
 
     public Hood() {
         configureMotor();
@@ -81,6 +84,7 @@ public class Hood extends SubsystemBase{
         hoodMotor.getConfigurator().apply(softLimits);
         hoodMotor.getConfigurator().apply(feedbackUnits);
         hoodMotor.getConfigurator().apply(torqueDeadband);
+        hoodMotor.getConfigurator().apply(magicConfigs);
 
         zeroHood();   
     }
@@ -94,7 +98,12 @@ public class Hood extends SubsystemBase{
 
         hoodMotor.setControl(motionMagic.withPosition(desiredAngle));
     }
-
+    public void setFixedAngle(double degrees) {
+        double clamped = Math.max(HoodConstants.MIN_HOOD_ANGLE.in(Degrees),
+                         Math.min(HoodConstants.MAX_HOOD_ANGLE.in(Degrees), degrees));
+        hoodMotor.setControl(motionMagic.withPosition(clamped));
+    }
+    
     public void lowerHood() {
         hoodMotor.setControl(motionMagic.withPosition(HoodConstants.MAX_HOOD_ANGLE.in(Degrees)));
     }

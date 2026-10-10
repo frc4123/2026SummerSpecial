@@ -13,14 +13,16 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import java.lang.Math;
 
-// import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.math.geometry.Rotation2d;
-// import org.wpilib.math.kinematics.ChassisVelocities;
+import org.wpilib.math.kinematics.ChassisVelocities;
 import org.wpilib.driverstation.GenericHID.RumbleType;
-// import org.wpilib.framework.RobotBase;
+import org.wpilib.framework.RobotBase;
 import org.wpilib.system.Timer;
 
 import org.wpilib.tunable.Selectable;
+import org.wpilib.tunable.TunableDouble;
 import org.wpilib.tunable.Tunables;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.Commands;
@@ -29,9 +31,6 @@ import org.wpilib.command2.RepeatCommand;
 import org.wpilib.command2.button.CommandGenericHID;
 import org.wpilib.command2.button.CommandXboxController;
 import org.wpilib.command2.button.Trigger;
-// import org.wpilib.command2.ParallelCommandGroup;
-// import org.wpilib.command2.ParallelRaceGroup;
-// import org.wpilib.command2.RepeatCommand;
 import org.wpilib.command2.SequentialCommandGroup;
 import org.wpilib.command2.WaitCommand;
 
@@ -44,11 +43,11 @@ import frc.robot.subsystems.IntakeRoller;
 import frc.robot.subsystems.SevenEleven;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Uptake;
-// import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.turret.Turret;
-// import frc.robot.subsystems.turret.TrajectoryCalculator;
-// import frc.robot.subsystems.turret.TrajectoryCalculator.ShotData;
-// import frc.robot.subsystems.turret.TurretVisSim;
+import frc.robot.subsystems.turret.TrajectoryCalculator;
+import frc.robot.subsystems.turret.TrajectoryCalculator.ShotData;
+import frc.robot.subsystems.turret.TurretVisSim;
 import frc.robot.utils.FuelSim;
 import frc.robot.utils.ShiftHelpers;
 import frc.robot.utils.Target;
@@ -62,7 +61,7 @@ import frc.robot.commands.autos.MadTown;
 import frc.robot.commands.autos.mtest;
 import frc.robot.commands.autos.orbit;
 import frc.robot.commands.hood.AvoidDecapitation;
-import frc.robot.commands.hood.HoodAim;
+// import frc.robot.commands.hood.HoodAim;
 import frc.robot.commands.intakeArm.ForceIntakeArmMid;
 import frc.robot.commands.intakeArm.IntakeArmIn;
 import frc.robot.commands.intakeArm.IntakeArmInMid;
@@ -121,9 +120,9 @@ public class RobotContainer {
 
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     // private final Oculus oculus = new Oculus();
-    // private final Vision vision = new Vision();
+    private final Vision vision = new Vision();
     private final Turret turret = new Turret(drivetrain);
-    // private final TurretVisSim turretVisSim = new TurretVisSim( () -> new Pose3d(drivetrain.getState().Pose), () -> drivetrain.getState().Velocity, vision, turret);
+    private final TurretVisSim turretVisSim = new TurretVisSim( () -> new Pose3d(drivetrain.getState().Pose), () -> drivetrain.getState().Velocity, vision, turret);
     private final IntakeRoller intakeRollers = new IntakeRoller();
     private final SevenEleven sevenEleven = new SevenEleven();
     private final IntakeArm intakeArm = new IntakeArm();
@@ -160,7 +159,7 @@ public class RobotContainer {
     // private final IntakeShimmy intakeShimmy = new IntakeShimmy(intakeArm, intakeRollers);
     private final RollReverse rollReverse = new RollReverse(sevenEleven);
     private final RollStop rollStop = new RollStop(sevenEleven);
-    private final HoodAim hoodAim = new HoodAim(hood);
+    // private final HoodAim hoodAim = new HoodAim(hood);
     private final AvoidDecapitation avoidDecapitation = new AvoidDecapitation(hood);
     private final SetShooterVelocity setShooterVelocity = new SetShooterVelocity(shooter);
     private final UptakeUp uptakeUp = new UptakeUp(uptake, turret, sevenEleven, shooter);
@@ -171,6 +170,8 @@ public class RobotContainer {
     // private final ClimbTest climbTest = new ClimbTest(climb);
 
     public double currentAngle = drivetrain.getState().Pose.getRotation().getDegrees();
+    private final TunableDouble hoodFixedDeg = Tunables.addDouble("Hood/FixedDeg", 50.0);
+    private final Command fixedHood = hood.run(() -> hood.setFixedAngle(hoodFixedDeg.get()));
 
     public RobotContainer() {
         configureBindings();
@@ -191,7 +192,7 @@ public class RobotContainer {
         }
 
         turret.setDefaultCommand(aim);
-        hood.setDefaultCommand(hoodAim);
+        hood.setDefaultCommand(fixedHood);          // was: hood.setDefaultCommand(hoodAim);
         shooter.setDefaultCommand(setShooterVelocity);
         //sevenEleven.setDefaultCommand(rollerPulse);
 
@@ -222,6 +223,45 @@ public class RobotContainer {
     private double applyDeadband(double value, double deadband) {
         if (Math.abs(value) < deadband) return 0.0;
         return value;
+    }
+    
+      private Pose2d resetPosetoNearestTrench() {
+        Pose2d current = drivetrain.getState().Pose;
+
+        final double fieldWidth = Constants.FieldConstants.FIELD_WIDTH.in(Meters);
+        final double trenchHalfDepth = Inches.of(47.0).in(Meters) / 2.0;   // trench depth along X
+        final double laneWidth = Inches.of(50.34).in(Meters);              // opening under the trench arm (Y)
+        final double robotHalfLength = Constants.Sim.fullLength / 2.0;
+        final double robotHalfWidth = Constants.Sim.fullWidth / 2.0;
+
+        // 1) Alliance's trench: the one with the nearest X (blue hub X or red hub X)
+        double blueX = Constants.VisionConstants.blueHub.getX();
+        double redX = Constants.VisionConstants.redHub.getX();
+        double cx = Math.abs(current.getX() - blueX) < Math.abs(current.getX() - redX) ? blueX : redX;
+
+        // 2) Lane: bottom or top, and the band the robot's center can physically be in
+        boolean bottom = current.getY() < fieldWidth / 2.0;
+        double minY = bottom ? robotHalfWidth : fieldWidth - laneWidth + robotHalfWidth;
+        double maxY = bottom ? laneWidth - robotHalfWidth : fieldWidth - robotHalfWidth;
+
+        // Ignore the press if we're not roughly lined up with the lane
+        double yError = current.getY() < minY ? minY - current.getY()
+                      : current.getY() > maxY ? current.getY() - maxY : 0.0;
+        if (yError > 0.8) return current;
+
+        // Y: keep odometry's value if it's physically possible, otherwise pull it into the lane
+        double newY = Math.max(minY, Math.min(maxY, current.getY()));
+
+        // 3) Side of the trench, from position (alliance color and intake direction don't matter)
+        double side = current.getX() >= cx ? 1.0 : -1.0;
+        double entryX = cx + side * (trenchHalfDepth + robotHalfLength);
+
+        // X: snap to the entrance spot only if we're close to it, otherwise keep odometry's X
+        double newX = Math.abs(current.getX() - entryX) < 0.6 ? entryX : current.getX();
+
+        Pose2d fixed = new Pose2d(newX, newY, current.getRotation());
+        drivetrain.resetPose(fixed);
+        return fixed;
     }
 
     private void configureBindings() {
@@ -259,9 +299,12 @@ public class RobotContainer {
 
         joystick.b().onTrue(
             Commands.runOnce(() -> {
-                snappedAngle[0] = Target.getTrenchAngle(
-                    drivetrain.getState().Pose.getTranslation().getX()
-                );
+                Pose2d fixedPose =resetPosetoNearestTrench();
+                snappedAngle[0] = 
+                    Target.getTrenchAngle(fixedPose.getTranslation().getX());
+
+                ;
+            
             })
         );
 
@@ -370,7 +413,7 @@ public class RobotContainer {
         joystick.leftStick().onTrue(intakeArmIn);
 
         joystick.rightStick().onTrue(avoidDecapitation);
-        joystick.rightStick().onFalse(hoodAim);
+        joystick.rightStick().onFalse(fixedHood);
 
         // joystick.button(8).onTrue(manualReset);
         // joystick.button(8).onFalse(hoodAim);
@@ -426,7 +469,7 @@ public class RobotContainer {
         );
 
         endingShiftWarning.onFalse(
-            Commands.run(() -> {
+            Commands.runOnce(() -> {
                 joystick.getHID().setRumble(RumbleType.LEFT_RUMBLE, 0);
                 joystick.getHID().setRumble(RumbleType.RIGHT_RUMBLE, 0);
             })
@@ -466,29 +509,29 @@ public class RobotContainer {
 
         instance.start();
 
-        // if (RobotBase.isSimulation()) {
-        //     turret.setDefaultCommand(turretVisSim.repeatedlyLaunchFuel(
-        //         () -> {
-        //             ShotData shot = TrajectoryCalculator.iterativeMovingShotFromFunnelClearance(
-        //                 drivetrain.getState().Pose,
-        //                 new ChassisVelocities(),
-        //                 turretVisSim.getTurretTarget(),
-        //                 3
-        //             );
-        //             return shot.getExitVelocity();
-        //         },
-        //         () -> {
-        //             ShotData shot = TrajectoryCalculator.iterativeMovingShotFromFunnelClearance(
-        //                 drivetrain.getState().Pose,
-        //                 new ChassisVelocities(),
-        //                 turretVisSim.getTurretTarget(),
-        //                 3
-        //             );
-        //             return shot.getHoodAngle();
-        //         },
-        //         turret
-        //     ));
-        // }
+        if (RobotBase.isSimulation()) {
+            turret.setDefaultCommand(turretVisSim.repeatedlyLaunchFuel(
+                () -> {
+                    ShotData shot = TrajectoryCalculator.iterativeMovingShotFromFunnelClearance(
+                        drivetrain.getState().Pose,
+                        new ChassisVelocities(),
+                        turretVisSim.getTurretTarget(),
+                        3
+                    );
+                    return shot.getExitVelocity();
+                },
+                () -> {
+                    ShotData shot = TrajectoryCalculator.iterativeMovingShotFromFunnelClearance(
+                        drivetrain.getState().Pose,
+                        new ChassisVelocities(),
+                        turretVisSim.getTurretTarget(),
+                        3
+                    );
+                    return shot.getHoodAngle();
+                },
+                turret
+            ));
+        }
         
         Tunables.publish("Reset Fuel", Commands.runOnce(() -> {
                     FuelSim.getInstance().clearFuel();

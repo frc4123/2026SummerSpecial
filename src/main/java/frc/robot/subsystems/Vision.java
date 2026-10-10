@@ -27,13 +27,14 @@ import org.wpilib.math.geometry.Transform3d;
 import org.wpilib.math.geometry.Translation3d;
 import org.wpilib.math.numbers.N1;
 import org.wpilib.math.numbers.N3;
+import org.wpilib.telemetry.Telemetry;
+
+import com.ctre.phoenix6.Utils;
+
 import org.wpilib.driverstation.MatchState;
 import org.wpilib.driverstation.RobotState;
 import org.wpilib.fields.Fields;
 import org.wpilib.driverstation.Alliance;
-// import org.wpilib.driverstation.MatchType;
-// import org.wpilib.driverstation.DriverStationErrors;
-// import org.wpilib.driverstation.Alliance;
 import org.wpilib.command2.SubsystemBase;
 
 import frc.robot.Constants.TurretConstants;
@@ -42,6 +43,8 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.utils.Field;
 
 public class Vision extends SubsystemBase {
+
+    private static final boolean VISION_ENABLED = false;
 
     private final Transform3d FLO_robotToCam;
     private final Transform3d FLI_robotToCam;
@@ -59,10 +62,20 @@ public class Vision extends SubsystemBase {
     // private final StructPublisher<Transform3d> CamTargetTransformPublisher;
 
     
-    private final PhotonCamera FLO_camera = new PhotonCamera("Front_Left_Outside");
-    private final PhotonCamera FLI_camera = new PhotonCamera("Front_Left_Inside");
-    private final PhotonCamera FRI_camera = new PhotonCamera("Front_Right_Inside");
-    private final PhotonCamera FRO_camera = new PhotonCamera("Front_Right_Outside");
+    private final PhotonCamera FLO_camera = makeCamera("Front_Left_Outside");
+    private final PhotonCamera FLI_camera = makeCamera("Front_Left_Inside");
+    private final PhotonCamera FRI_camera = makeCamera("Front_Right_Inside");
+    private final PhotonCamera FRO_camera = makeCamera("Front_Right_Outside");
+
+    private static PhotonCamera makeCamera(String name) {
+        if (!VISION_ENABLED) return null;
+        try {
+            return new PhotonCamera(name);
+        } catch (Throwable t) {
+            System.err.println("PhotonCamera '" + name + "' failed to load: " + t);
+            return null;
+        }
+    }
 
     private final PhotonPoseEstimator FLO_Estimator;
     private final PhotonPoseEstimator FLI_Estimator;
@@ -79,7 +92,13 @@ public class Vision extends SubsystemBase {
 
     public Vision() {
         this.aprilTagFieldLayout = org.wpilib.fields.Field.loadField(Fields.DEFAULT_FIELD);
-        
+       //temporary 
+        for (int id : new int[] {18, 21, 26, 2, 5, 10}) {
+            aprilTagFieldLayout.getTagPose(id).ifPresent(p ->
+                System.out.println("Tag " + id + ": x=" + p.getX() + " y=" + p.getY()
+                    + " deg=" + p.getRotation().toRotation2d().getDegrees()));
+        }
+
         // Camera transforms
         FLO_robotToCam = new Transform3d(
             new Translation3d(
@@ -208,12 +227,19 @@ public class Vision extends SubsystemBase {
             if(isEstOffField(est)){return;}
 
             Matrix<N3, N1> stdDevs = calculateStdDevs(est, validTargets);
-
+            // cancel out vision to see if they are the problem
             swerve.addVisionMeasurement(
                 est.estimatedPose.toPose2d(),
                 est.timestampSeconds,
-                stdDevs
+                VecBuilder.fill(stdDevs.get(0, 0), stdDevs.get(1, 0), 1e9)
             );
+            // vision debug 
+            Telemetry.log("Vision/Cam", camToChoose);
+            Telemetry.log("Vision/TagId", result.getBestTarget().getFiducialId());
+            Telemetry.log("Vision/EstX", est.estimatedPose.getX());
+            Telemetry.log("Vision/EstY", est.estimatedPose.getY());
+            Telemetry.log("Vision/EstDeg", est.estimatedPose.toPose2d().getRotation().getDegrees());
+            Telemetry.log("Vision/LatencySec", Utils.getCurrentTimeSeconds() - est.timestampSeconds);
         }
     }
 
@@ -330,15 +356,16 @@ public class Vision extends SubsystemBase {
     }
 
     public int avoidDisconnectedCams(int camToChoose){
-        if(camToChoose == 0 && !FLO_camera.isConnected()){camToChoose++;}
-        if(camToChoose == 1 && !FLI_camera.isConnected()){camToChoose++;}
-        if(camToChoose == 2 && !FRI_camera.isConnected()){camToChoose++;}
-        if(camToChoose == 3 && !FRO_camera.isConnected()){camToChoose++;}
+        if(camToChoose == 0 && (FLO_camera == null || !FLO_camera.isConnected())){camToChoose++;}
+        if(camToChoose == 1 && (FLI_camera == null || !FLI_camera.isConnected())){camToChoose++;}
+        if(camToChoose == 2 && (FRI_camera == null || !FRI_camera.isConnected())){camToChoose++;}
+        if(camToChoose == 3 && (FRO_camera == null || !FRO_camera.isConnected())){camToChoose++;}
         return camToChoose;
     }
 
     @Override
     public void periodic() {
+        if (!VISION_ENABLED) return;
         camToChoose = camProcessorCounter % 4;
         camToChoose = avoidDisconnectedCams(camToChoose);
 
