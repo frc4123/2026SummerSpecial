@@ -22,6 +22,7 @@ import org.wpilib.framework.RobotBase;
 import org.wpilib.system.Timer;
 
 import org.wpilib.tunable.Selectable;
+import org.wpilib.tunable.TunableDouble;
 import org.wpilib.tunable.Tunables;
 import org.wpilib.command2.Command;
 import org.wpilib.command2.Commands;
@@ -60,7 +61,7 @@ import frc.robot.commands.autos.MadTown;
 import frc.robot.commands.autos.mtest;
 import frc.robot.commands.autos.orbit;
 import frc.robot.commands.hood.AvoidDecapitation;
-import frc.robot.commands.hood.HoodAim;
+// import frc.robot.commands.hood.HoodAim;
 import frc.robot.commands.intakeArm.ForceIntakeArmMid;
 import frc.robot.commands.intakeArm.IntakeArmIn;
 import frc.robot.commands.intakeArm.IntakeArmInMid;
@@ -158,7 +159,7 @@ public class RobotContainer {
     // private final IntakeShimmy intakeShimmy = new IntakeShimmy(intakeArm, intakeRollers);
     private final RollReverse rollReverse = new RollReverse(sevenEleven);
     private final RollStop rollStop = new RollStop(sevenEleven);
-    private final HoodAim hoodAim = new HoodAim(hood);
+    // private final HoodAim hoodAim = new HoodAim(hood);
     private final AvoidDecapitation avoidDecapitation = new AvoidDecapitation(hood);
     private final SetShooterVelocity setShooterVelocity = new SetShooterVelocity(shooter);
     private final UptakeUp uptakeUp = new UptakeUp(uptake, turret, sevenEleven, shooter);
@@ -169,6 +170,8 @@ public class RobotContainer {
     // private final ClimbTest climbTest = new ClimbTest(climb);
 
     public double currentAngle = drivetrain.getState().Pose.getRotation().getDegrees();
+    private final TunableDouble hoodFixedDeg = Tunables.addDouble("Hood/FixedDeg", 50.0);
+    private final Command fixedHood = hood.run(() -> hood.setFixedAngle(hoodFixedDeg.get()));
 
     public RobotContainer() {
         configureBindings();
@@ -189,7 +192,7 @@ public class RobotContainer {
         }
 
         turret.setDefaultCommand(aim);
-        hood.setDefaultCommand(hoodAim);
+        hood.setDefaultCommand(fixedHood);          // was: hood.setDefaultCommand(hoodAim);
         shooter.setDefaultCommand(setShooterVelocity);
         //sevenEleven.setDefaultCommand(rollerPulse);
 
@@ -410,7 +413,7 @@ public class RobotContainer {
         joystick.leftStick().onTrue(intakeArmIn);
 
         joystick.rightStick().onTrue(avoidDecapitation);
-        joystick.rightStick().onFalse(hoodAim);
+        joystick.rightStick().onFalse(fixedHood);
 
         // joystick.button(8).onTrue(manualReset);
         // joystick.button(8).onFalse(hoodAim);
