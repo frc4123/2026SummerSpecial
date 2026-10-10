@@ -98,11 +98,11 @@ public class Hood extends SubsystemBase{
 
         hoodMotor.setControl(motionMagic.withPosition(desiredAngle));
     }
-    public void setFixedAngle(double degrees) {
-        double clamped = Math.max(HoodConstants.MIN_HOOD_ANGLE.in(Degrees),
-                         Math.min(HoodConstants.MAX_HOOD_ANGLE.in(Degrees), degrees));
-        hoodMotor.setControl(motionMagic.withPosition(clamped));
-    }
+    // public void setFixedAngle(double degrees) {
+    //     double clamped = Math.max(HoodConstants.MIN_HOOD_ANGLE.in(Degrees),
+    //                      Math.min(HoodConstants.MAX_HOOD_ANGLE.in(Degrees), degrees));
+    //     hoodMotor.setControl(motionMagic.withPosition(clamped));
+    // }
     
     public void lowerHood() {
         hoodMotor.setControl(motionMagic.withPosition(HoodConstants.MAX_HOOD_ANGLE.in(Degrees)));

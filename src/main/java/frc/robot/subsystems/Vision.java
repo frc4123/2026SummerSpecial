@@ -62,20 +62,12 @@ public class Vision extends SubsystemBase {
     // private final StructPublisher<Transform3d> CamTargetTransformPublisher;
 
     
-    private final PhotonCamera FLO_camera = makeCamera("Front_Left_Outside");
-    private final PhotonCamera FLI_camera = makeCamera("Front_Left_Inside");
-    private final PhotonCamera FRI_camera = makeCamera("Front_Right_Inside");
-    private final PhotonCamera FRO_camera = makeCamera("Front_Right_Outside");
+    private final PhotonCamera FLO_camera = new PhotonCamera("Front_Left_Outside");
+    private final PhotonCamera FLI_camera = new PhotonCamera("Front_Left_Inside");
+    private final PhotonCamera FRI_camera = new PhotonCamera("Front_Right_Inside");
+    private final PhotonCamera FRO_camera = new PhotonCamera("Front_Right_Outside");
 
-    private static PhotonCamera makeCamera(String name) {
-        if (!VISION_ENABLED) return null;
-        try {
-            return new PhotonCamera(name);
-        } catch (Throwable t) {
-            System.err.println("PhotonCamera '" + name + "' failed to load: " + t);
-            return null;
-        }
-    }
+   
 
     private final PhotonPoseEstimator FLO_Estimator;
     private final PhotonPoseEstimator FLI_Estimator;
