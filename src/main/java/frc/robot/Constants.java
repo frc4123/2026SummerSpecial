@@ -302,7 +302,8 @@ public class Constants {
 
         public static final Angle ZERO_HOOD_ANGLE = Degrees.of(0);
         public static final Angle MIN_HOOD_ANGLE = Degrees.of(35); // its really 29.359724
-        public static final Angle MAX_HOOD_ANGLE = Degrees.of(71.359724);  
+        public static final Angle MAX_HOOD_ANGLE = Degrees.of(71.359724);
+        public static final Angle FIXED_HOOD_ANGLE = Degrees.of(80);
         // public static final Angle FIXED_HOOD_ANGLE = Degrees.of(0);
 
         public static final Angle MAX_HOOD_SHOT_ANGLE = Degrees.of(60); //65

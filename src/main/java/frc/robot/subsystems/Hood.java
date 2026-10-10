@@ -16,6 +16,9 @@ import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import org.wpilib.command2.SubsystemBase;
+import org.wpilib.telemetry.Telemetry;
+import org.wpilib.units.measure.Angle;
+
 import frc.robot.Constants;
 import frc.robot.Constants.HoodConstants;
 import frc.robot.Constants.IntakeArmConstants;
@@ -44,12 +47,11 @@ public class Hood extends SubsystemBase{
         new MotionMagicTorqueCurrentFOC(
             HoodConstants.MIN_HOOD_ANGLE
         );
-    private final MotionMagicConfigs magicConfigs =
+    private final MotionMagicConfigs magicConfigs = 
         new MotionMagicConfigs()
             .withMotionMagicCruiseVelocity(HoodConstants.velocity)
             .withMotionMagicAcceleration(HoodConstants.acceleration)
         ;
-        
 
     public Hood() {
         configureMotor();
@@ -98,14 +100,16 @@ public class Hood extends SubsystemBase{
 
         hoodMotor.setControl(motionMagic.withPosition(desiredAngle));
     }
-    // public void setFixedAngle(double degrees) {
-    //     double clamped = Math.max(HoodConstants.MIN_HOOD_ANGLE.in(Degrees),
-    //                      Math.min(HoodConstants.MAX_HOOD_ANGLE.in(Degrees), degrees));
-    //     hoodMotor.setControl(motionMagic.withPosition(clamped));
-    // }
-    
+
+    public void setFixedAngle(){
+        hoodMotor.setControl(motionMagic.withPosition(HoodConstants.FIXED_HOOD_ANGLE));
+    }
+    public StatusSignal<Angle> getHoodAngle(){
+        return hoodMotor.getPosition();
+    }
+
     public void lowerHood() {
-        hoodMotor.setControl(motionMagic.withPosition(HoodConstants.MAX_HOOD_ANGLE.in(Degrees)));
+        hoodMotor.setControl(motionMagicFree.withPosition(HoodConstants.MAX_HOOD_ANGLE.in(Degrees)));
     }
 
     public void lowerHoodFree() {
@@ -141,5 +145,8 @@ public class Hood extends SubsystemBase{
             zeroHood();
         }
         wasPressed = pressed;
+        // StatusSignal<Angle> angle = hoodMotor.getHoodAngle
+        // Telemetry.log("Real Hood Angle", hoodMotor.getHoodAngle());
+        
     }
 }
