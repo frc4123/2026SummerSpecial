@@ -172,17 +172,13 @@ public class Vision extends SubsystemBase {
         double yawDeg = state.Pose.getRotation().getDegrees();
         double yawRateDegPerSec = Math.toDegrees(state.Velocity.omega);
 
-        // 1) Publish heading BEFORE reading MegaTag2. One call updates every camera.
-        //    If you already call this elsewhere, delete this line and make sure
-        //    yours runs every loop before Vision.periodic().
+        // Publish heading BEFORE reading MegaTag2. One call updates every camera.
         Limelight.setSharedRobotOrientation(yawDeg, yawRateDegPerSec, 0, 0, 0, 0);
 
         for (Limelight ll : limelights) {
-            // 2) Every estimate since last loop that passed the MT2 config filters.
-            //    (This consumes the queue - only read it once per camera per loop.)
+            //    Every estimate since last loop that passed the MT2 config filters.
             PoseEstimate[] estimates = ll.readAcceptedPoseEstimates(PoseEstimateType.MT2_WPIBLUE);
 
-            // 3) Feed each one to the swerve pose estimator.
             for (PoseEstimate est : estimates) {
                 swerve.addVisionMeasurement(est.pose, est.timestampSeconds, est.stdDevs);
             }
