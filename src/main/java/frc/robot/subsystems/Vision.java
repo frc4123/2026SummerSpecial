@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-
 import static org.wpilib.units.Units.Meters;
 
 import org.wpilib.math.geometry.Pose2d;
@@ -71,10 +70,7 @@ public class Vision extends SubsystemBase {
         CommandSwerveDrivetrain.getInstance();
 
     public Vision() {
-        // Apply the MegaTag2 filtering / std dev config to every camera.
-        for (Limelight ll : limelights) {
-            ll.withPoseEstimateConfig_MT2(mt2Config());
-        }
+
     }
 
     /**
