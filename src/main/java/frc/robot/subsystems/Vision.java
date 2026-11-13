@@ -2,309 +2,119 @@ package frc.robot.subsystems;
 
 import static org.wpilib.units.Units.Meters;
 
-import java.io.IOException;
-// import java.io.InputStream;
-// import java.io.InputStreamReader;
-import java.io.UncheckedIOException;
-// import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
-
-import org.wpilib.math.linalg.Matrix;
-import org.wpilib.math.linalg.VecBuilder;
+import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.math.geometry.Rotation3d;
-import org.wpilib.math.geometry.Transform3d;
-import org.wpilib.math.geometry.Translation3d;
-import org.wpilib.math.numbers.N1;
-import org.wpilib.math.numbers.N3;
-import org.wpilib.telemetry.Telemetry;
-
-import com.ctre.phoenix6.Utils;
-
 import org.wpilib.driverstation.MatchState;
 import org.wpilib.driverstation.RobotState;
-import org.wpilib.fields.Fields;
 import org.wpilib.driverstation.Alliance;
 import org.wpilib.command2.SubsystemBase;
 
+import com.limelightvision.Limelight;
+import com.limelightvision.PoseEstimate;
+import com.limelightvision.PoseEstimateConfig;
+import com.limelightvision.PoseEstimateType;
+
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.VisionConstants;
-
 import frc.robot.utils.Field;
 
 public class Vision extends SubsystemBase {
 
-    private static final boolean VISION_ENABLED = false;
+    // DON'T FORGET TO UPDATE THE NAME OF THE CAMERAS IN THE CONSTRUCTOR BELOW.
 
-    private final Transform3d FLO_robotToCam;
-    private final Transform3d FLI_robotToCam;
-    private final Transform3d FRI_robotToCam;
-    private final Transform3d FRO_robotToCam;
+    private static final String FRONT_LIMELIGHT_NAME = "limelight-front";
+    private static final String LEFT_LIMELIGHT_NAME = "limelight-left";
+    private static final String RIGHT_LIMELIGHT_NAME = "limelight-right";
 
-    private final org.wpilib.fields.Field aprilTagFieldLayout;
-    // Standard deviations (tune these based on camera characteristics)
-    private final Matrix<N3, N1> singleTagStdDevs = VecBuilder.fill(0.8, 0.8, 1); // 0.5 0.5
-    private final Matrix<N3, N1> multiTagStdDevs = VecBuilder.fill(0.5, 0.5, 0.4); // 0.2 0.2
-    // the higher the number the less you trust your camera additions
-    // third parameter should be double the first 2
+    /**
+     * MegaTag2 filtering + std devs. The library rejects bad estimates and
+     * fills in est.stdDevs for us. Starts from Limelight's (untuned) defaults:
+     * XY std dev = 0.3 * avgTagDistance / sqrt(tagCount), heading not fused.
+     */
+    private static PoseEstimateConfig mt2Config() {
+        return PoseEstimateConfig.defaultMT2()
+            .withFieldBounds(Field.fieldLength.in(Meters), Field.fieldWidth.in(Meters))
+            .withStdDevXY(0.3, 0.05, 5.0); // base, min, max (meters) - tune this
+    }
 
-    // private final StructPublisher<Pose3d> CamPosePublisher;
-    // private final StructPublisher<Transform3d> CamTargetTransformPublisher;
+    //GET THE COORDINATES FOR THE CAMERAS, X, Y, Z, PITCH, ROLL, YAW
+    // Constructor order is: name, forward, left, up (meters), roll, pitch, yaw (degrees)
 
-    
-    private final PhotonCamera FLO_camera = new PhotonCamera("Front_Left_Outside");
-    private final PhotonCamera FLI_camera = new PhotonCamera("Front_Left_Inside");
-    private final PhotonCamera FRI_camera = new PhotonCamera("Front_Right_Inside");
-    private final PhotonCamera FRO_camera = new PhotonCamera("Front_Right_Outside");
+    private final Limelight frontLimelight = new Limelight(
+        FRONT_LIMELIGHT_NAME,
+        VisionConstants.FRONT_LIMELIGHT_X, VisionConstants.FRONT_LIMELIGHT_Y, VisionConstants.FRONT_LIMELIGHT_Z,
+        VisionConstants.FRONT_LIMELIGHT_ROLL, VisionConstants.FRONT_LIMELIGHT_PITCH, VisionConstants.FRONT_LIMELIGHT_YAW
+    ).withPoseEstimateConfig_MT2(mt2Config());
 
-   
+    private final Limelight leftLimelight = new Limelight(
+        LEFT_LIMELIGHT_NAME,
+        VisionConstants.LEFT_LIMELIGHT_X, VisionConstants.LEFT_LIMELIGHT_Y, VisionConstants.LEFT_LIMELIGHT_Z,
+        VisionConstants.LEFT_LIMELIGHT_ROLL, VisionConstants.LEFT_LIMELIGHT_PITCH, VisionConstants.LEFT_LIMELIGHT_YAW
+    ).withPoseEstimateConfig_MT2(mt2Config());
 
-    private final PhotonPoseEstimator FLO_Estimator;
-    private final PhotonPoseEstimator FLI_Estimator;
-    private final PhotonPoseEstimator FRI_Estimator;
-    private final PhotonPoseEstimator FRO_Estimator;
+    private final Limelight rightLimelight = new Limelight(
+        RIGHT_LIMELIGHT_NAME,
+        VisionConstants.RIGHT_LIMELIGHT_X, VisionConstants.RIGHT_LIMELIGHT_Y, VisionConstants.RIGHT_LIMELIGHT_Z,
+        VisionConstants.RIGHT_LIMELIGHT_ROLL, VisionConstants.RIGHT_LIMELIGHT_PITCH, VisionConstants.RIGHT_LIMELIGHT_YAW
+    ).withPoseEstimateConfig_MT2(mt2Config());
 
-    private int camProcessorCounter = 0;
-    private int camToChoose = 0;
+    private final Limelight[] limelights = {frontLimelight, leftLimelight, rightLimelight};
 
     private static boolean isBlue = false;
     private static boolean isRed = false;
 
-    private final CommandSwerveDrivetrain swerve = CommandSwerveDrivetrain.getInstance();
+    private final CommandSwerveDrivetrain swerve =
+        CommandSwerveDrivetrain.getInstance();
 
     public Vision() {
-        this.aprilTagFieldLayout = org.wpilib.fields.Field.loadField(Fields.DEFAULT_FIELD);
-       //temporary 
-        for (int id : new int[] {18, 21, 26, 2, 5, 10}) {
-            aprilTagFieldLayout.getTagPose(id).ifPresent(p ->
-                System.out.println("Tag " + id + ": x=" + p.getX() + " y=" + p.getY()
-                    + " deg=" + p.getRotation().toRotation2d().getDegrees()));
-        }
-
-        // Camera transforms
-        FLO_robotToCam = new Transform3d(
-            new Translation3d(
-                VisionConstants.FLO_frontX,
-                VisionConstants.FLO_frontY,
-                VisionConstants.FLO_frontZ),
-            new Rotation3d(
-                VisionConstants.FLO_frontRoll,
-                VisionConstants.FLO_frontPitch,
-                VisionConstants.FLO_frontYaw)
-        );
-
-        FLI_robotToCam = new Transform3d(
-            new Translation3d(
-                VisionConstants.FLI_frontX,
-                VisionConstants.FLI_frontY,
-                VisionConstants.FLI_frontZ),
-            new Rotation3d(
-                VisionConstants.FLI_frontRoll,
-                VisionConstants.FLI_frontPitch,
-                VisionConstants.FLI_frontYaw)
-        );
-
-        FRI_robotToCam = new Transform3d(
-            new Translation3d(
-                VisionConstants.FRI_frontX,
-                VisionConstants.FRI_frontY,
-                VisionConstants.FRI_frontZ),
-            new Rotation3d(
-                VisionConstants.FRI_frontRoll,
-                VisionConstants.FRI_frontPitch,
-                VisionConstants.FRI_frontYaw)
-        );
-
-        FRO_robotToCam = new Transform3d(
-            new Translation3d(
-                VisionConstants.FRO_frontX,
-                VisionConstants.FRO_frontY,
-                VisionConstants.FRO_frontZ),
-            new Rotation3d(
-                VisionConstants.FRO_frontRoll,
-                VisionConstants.FRO_frontPitch,
-                VisionConstants.FRO_frontYaw)
-        );
-
-        // front camera estimator (new 2026 syntax)
-        FLO_Estimator = new PhotonPoseEstimator(
-            aprilTagFieldLayout,
-            FLO_robotToCam
-        );
-
-        FLI_Estimator = new PhotonPoseEstimator(
-            aprilTagFieldLayout,
-            FLI_robotToCam
-        );
-
-        FRI_Estimator = new PhotonPoseEstimator(
-            aprilTagFieldLayout,
-            FRI_robotToCam
-        );
-
-        FRO_Estimator = new PhotonPoseEstimator(
-            aprilTagFieldLayout,
-            FRO_robotToCam
-        );
-
-        // Initialize NetworkTables publishers
-        // NetworkTableInstance inst = NetworkTableInstance.getDefault();
-        // CamPosePublisher = inst.getStructTopic("/Vision/LeftCameraPose", Pose3d.struct).publish();
-        // CamTargetTransformPublisher = inst.getStructTopic("/Vision/LeftCamTargetTransform", Transform3d.struct).publish();
-        
+        // Camera objects are initialized above.
     }
 
-
-    public static PhotonPipelineResult getLatestResults(PhotonCamera camera) {
-        List<PhotonPipelineResult> results = camera.getAllUnreadResults();
-
-        if (results.isEmpty()) {
-            return null;
-        }
-
-        PhotonPipelineResult latest = results.get(results.size() - 1);
-
-        if (!latest.hasTargets()) {
-            return null;
-        }
-
-        return latest;
-    }
-
-    private void processVision(PhotonCamera camera, PhotonPoseEstimator estimator) {
-
-        PhotonPipelineResult result = getLatestResults(camera);
-        if (result == null) return;
-
-        ArrayList<PhotonTrackedTarget> validTargets = getValidTargets(result, estimator);
-
-        //if (validTargets.isEmpty()) return;
-
-        Optional<EstimatedRobotPose> estimatedPose = Optional.empty();
-
-        /*if (result.getMultiTagResult().isPresent() && validTargets.size() > 1) {
-            estimatedPose = estimator.estimateCoprocMultiTagPose(result);
-        } else {*/
-
-        if(!isTagHub(result)) {
-            return;
-        }
-
-            Optional<EstimatedRobotPose> singleTagPose =
-                estimator.estimateLowestAmbiguityPose(result);
-
-            if (singleTagPose.isPresent()) {
-                PhotonTrackedTarget best = result.getBestTarget();
-
-                if (best != null &&
-                    best.getPoseAmbiguity() < VisionConstants.ambiguityThreshold) {
-                    estimatedPose = singleTagPose;
-                }
-            }
-        //}
-
-        if (estimatedPose.isPresent()) {
-            EstimatedRobotPose est = estimatedPose.get();
-
-            if(isEstOffField(est)){return;}
-
-            Matrix<N3, N1> stdDevs = calculateStdDevs(est, validTargets);
-            // cancel out vision to see if they are the problem
-            swerve.addVisionMeasurement(
-                est.estimatedPose.toPose2d(),
-                est.timestampSeconds,
-                VecBuilder.fill(stdDevs.get(0, 0), stdDevs.get(1, 0), 1e9)
-            );
-            // vision debug 
-            Telemetry.log("Vision/Cam", camToChoose);
-            Telemetry.log("Vision/TagId", result.getBestTarget().getFiducialId());
-            Telemetry.log("Vision/EstX", est.estimatedPose.getX());
-            Telemetry.log("Vision/EstY", est.estimatedPose.getY());
-            Telemetry.log("Vision/EstDeg", est.estimatedPose.toPose2d().getRotation().getDegrees());
-            Telemetry.log("Vision/LatencySec", Utils.getCurrentTimeSeconds() - est.timestampSeconds);
-        }
-    }
-
-    public boolean isEstOffField(EstimatedRobotPose est){
-        if ((est.estimatedPose.getX() < 0) || (est.estimatedPose.getX() > Field.fieldLength.in(Meters))) {
+    /**
+     * Returns whether a robot pose is outside the playable field dimensions.
+     */
+    public boolean isEstOffField(Pose3d estimatedPose) {
+        if (estimatedPose.getX() < 0
+            || estimatedPose.getX() > Field.fieldLength.in(Meters)) {
             return true;
-        } else if ((est.estimatedPose.getY() < 0) || (est.estimatedPose.getY() > Field.fieldWidth.in(Meters))) {
+        }
+
+        if (estimatedPose.getY() < 0
+            || estimatedPose.getY() > Field.fieldWidth.in(Meters)) {
             return true;
         }
 
         return false;
     }
 
-    private ArrayList<PhotonTrackedTarget> getValidTargets(PhotonPipelineResult result, PhotonPoseEstimator estimator) {
-        ArrayList<PhotonTrackedTarget> validTargets = new ArrayList<PhotonTrackedTarget>();
-        for (PhotonTrackedTarget target : result.getTargets()) {
-            double area = target.getArea(); // PhotonVision gives this as % of image
-            if ((target.getPoseAmbiguity() > VisionConstants.ambiguityThreshold) && (area < VisionConstants.tagAreaThreshold)) {
-                continue;
-            }
-            
-            validTargets.add(target);
-        }
-
-        return validTargets;
-    }
-    
-    public double[] getHubOffsetForTag(int id){
-        switch(id){
-            case 21: return new double[]{0.0, TurretConstants.tagOffset};
-            case 26: return new double[]{-TurretConstants.tagOffset, 0.0};
-            case 18: return new double[]{0.0, -TurretConstants.tagOffset};
-
-            case 2: return new double[]{0.0, TurretConstants.tagOffset};
-            case 10: return new double[]{TurretConstants.tagOffset, 0.0};
-            case 5: return new double[]{0.0, -TurretConstants.tagOffset};
-        }
-        return new double[] {0.0,0.0};
-    }
-
-    public static org.wpilib.fields.Field loadAprilTagFieldLayout(String resourceFile) {
-        try {
-            return org.wpilib.fields.Field.loadFromResource(resourceFile);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+    public void resetPosetoTower() {
+        if (MatchState.getAlliance().get() == Alliance.BLUE) {
+            swerve.resetPose(
+                new Pose2d(Field.BlueTower.center, Rotation2d.ZERO)
+            );
         }
     }
 
-    private Matrix<N3, N1> calculateStdDevs(EstimatedRobotPose est, List<PhotonTrackedTarget> targets) {
-        int numTags = 0;
-        double totalDistance = 0;
+    public double[] getHubOffsetForTag(int id) {
+        switch (id) {
+            case 21: return new double[] {0.0, TurretConstants.tagOffset};
+            case 26: return new double[] {-TurretConstants.tagOffset, 0.0};
+            case 18: return new double[] {0.0, -TurretConstants.tagOffset};
 
-        for (PhotonTrackedTarget target : targets) {
-            Optional<Pose3d> tagPose = aprilTagFieldLayout.getTagPose(target.getFiducialId());
-            if (tagPose.isEmpty()) continue;
-            
-            numTags++;
-            totalDistance += tagPose.get().toPose2d().getTranslation()
-                .getDistance(est.estimatedPose.toPose2d().getTranslation());
+            case 2: return new double[] {0.0, TurretConstants.tagOffset};
+            case 10: return new double[] {TurretConstants.tagOffset, 0.0};
+            case 5: return new double[] {0.0, -TurretConstants.tagOffset};
+
+            default: return new double[] {0.0, 0.0};
         }
-
-        if (numTags == 0) return singleTagStdDevs;
-        
-        double avgDistance = totalDistance / numTags;
-        Matrix<N3, N1> baseDevs = numTags >= 2 ? multiTagStdDevs : singleTagStdDevs;
-        return baseDevs.times(0.2 + (avgDistance * avgDistance / 20));
     }
 
     public Pose3d getHub3D() {
-        if(isBlue == false && isRed == false){
-            if(RobotState.isDSAttached()){
-                isBlue = MatchState.getAlliance().get() == Alliance.BLUE ? true : false;
-                isRed = MatchState.getAlliance().get() == Alliance.RED ? true : false;
+        if (!isBlue && !isRed) {
+            if (RobotState.isDSAttached()) {
+                isBlue = MatchState.getAlliance().get() == Alliance.BLUE;
+                isRed = MatchState.getAlliance().get() == Alliance.RED;
             } else {
                 isBlue = false;
                 isRed = false;
@@ -314,21 +124,22 @@ public class Vision extends SubsystemBase {
         Pose3d blueHub = VisionConstants.blueHub;
         Pose3d redHub = VisionConstants.redHub;
 
-        if(isRed){
+        if (isRed) {
             return redHub;
-
-        } else {return blueHub;}
+        } else {
+            return blueHub;
+        }
     }
 
     public Rotation2d getTrenchAngle(double x) {
         if (Field.isBlue()) {
-            if (x > 4.63){
+            if (x > 4.63) {
                 return new Rotation2d(Math.toRadians(0));
             } else {
                 return new Rotation2d(Math.toRadians(180));
             }
-        } else { 
-            if (x > 11.91){
+        } else {
+            if (x > 11.91) {
                 return new Rotation2d(Math.toRadians(180));
             } else {
                 return new Rotation2d(Math.toRadians(0));
@@ -336,39 +147,43 @@ public class Vision extends SubsystemBase {
         }
     }
 
-    public boolean isTagHub(PhotonPipelineResult result){
-        if(result == null) {return false;}
-        int tagId = result.getBestTarget().getFiducialId();
-        if(Set.of(18,19,20,21,24,25,26,27).contains(tagId) && Field.isBlue()){
-            return true;
-        } else if (Set.of(8,9,10,11,2,3,4,5).contains(tagId) && Field.isRed()) {
-            return true;
+    /**
+     * Returns whether an AprilTag belongs to the hub on the current alliance.
+     */
+    public boolean isTagHub(int tagId) {
+        if (Field.isBlue()) {
+            return tagId == 18 || tagId == 19 || tagId == 20 || tagId == 21
+                || tagId == 24 || tagId == 25 || tagId == 26 || tagId == 27;
         }
+
+        if (Field.isRed()) {
+            return tagId == 8 || tagId == 9 || tagId == 10 || tagId == 11
+                || tagId == 2 || tagId == 3 || tagId == 4 || tagId == 5;
+        }
+
         return false;
-    }
-
-    public int avoidDisconnectedCams(int camToChoose){
-        if(camToChoose == 0 && (FLO_camera == null || !FLO_camera.isConnected())){camToChoose++;}
-        if(camToChoose == 1 && (FLI_camera == null || !FLI_camera.isConnected())){camToChoose++;}
-        if(camToChoose == 2 && (FRI_camera == null || !FRI_camera.isConnected())){camToChoose++;}
-        if(camToChoose == 3 && (FRO_camera == null || !FRO_camera.isConnected())){camToChoose++;}
-        return camToChoose;
     }
 
     @Override
     public void periodic() {
-        if (!VISION_ENABLED) return;
-        camToChoose = camProcessorCounter % 4;
-        camToChoose = avoidDisconnectedCams(camToChoose);
+        var state = swerve.getState();
+        double yawDeg = state.Pose.getRotation().getDegrees();
+        double yawRateDegPerSec = Math.toDegrees(state.Velocity.omega);
 
-        switch(camToChoose) {
-            case 0: processVision(FLO_camera, FLO_Estimator); break;
-            case 1: processVision(FLI_camera, FLI_Estimator); break;
-            case 2: processVision(FRI_camera, FRI_Estimator); break;
-            case 3: processVision(FRO_camera, FRO_Estimator); break;
-            case 4: break; // all cams are disconnected oh shoot
+        // 1) Publish heading BEFORE reading MegaTag2. One call updates every camera.
+        //    If you already call this elsewhere, delete this line and make sure
+        //    yours runs every loop before Vision.periodic().
+        Limelight.setSharedRobotOrientation(yawDeg, yawRateDegPerSec, 0, 0, 0, 0);
+
+        for (Limelight ll : limelights) {
+            // 2) Every estimate since last loop that passed the MT2 config filters.
+            //    (This consumes the queue - only read it once per camera per loop.)
+            PoseEstimate[] estimates = ll.readAcceptedPoseEstimates(PoseEstimateType.MT2_WPIBLUE);
+
+            // 3) Feed each one to the swerve pose estimator.
+            for (PoseEstimate est : estimates) {
+                swerve.addVisionMeasurement(est.pose, est.timestampSeconds, est.stdDevs);
+            }
         }
-
-        camProcessorCounter++;
     }
 }

@@ -364,40 +364,33 @@ public class Constants {
         public static final double tagAreaThreshold = 0.025;
 
         //FLO = Front_Left_Outside camera
-        public static final double FLO_frontX = Units.inchesToMeters(9.069); // 7.495 7.176364 -7.176364
-        public static final double FLO_frontY = Units.inchesToMeters(11.097);
-        public static final double FLO_frontZ = Units.inchesToMeters(7.826); // 7.02
+        public static final double FRONT_LIMELIGHT_X = 0;
+        public static final double FRONT_LIMELIGHT_Y = 0;
+        public static final double FRONT_LIMELIGHT_Z = 0;
 
-        public static final double FLO_frontRoll = Math.toRadians(0);
-        public static final double FLO_frontPitch = Math.toRadians(-15.0); // -75.0 negative pitch is up according to 25 code
-        public static final double FLO_frontYaw = Math.toRadians(132.273);
+        public static final double FRONT_LIMELIGHT_ROLL = 0;
+        public static final double FRONT_LIMELIGHT_PITCH = 0;
+        public static final double FRONT_LIMELIGHT_YAW = 0;
 
         //FLI = Front_Left_Inside camera
-        public static final double FLI_frontX = Units.inchesToMeters(10.836); // 7.495 7.176364 -7.176364
-        public static final double FLI_frontY = Units.inchesToMeters(9.396);
-        public static final double FLI_frontZ = Units.inchesToMeters(7.979); // 7.02
+        public static final double LEFT_LIMELIGHT_X = 0;
+        public static final double LEFT_LIMELIGHT_Y = 0;
+        public static final double LEFT_LIMELIGHT_Z = 0;
 
-        public static final double FLI_frontRoll = Math.toRadians(0);
-        public static final double FLI_frontPitch = Math.toRadians(-30.0); // -60 negative pitch is up according to 25 code
-        public static final double FLI_frontYaw = Math.toRadians(30);
+        public static final double LEFT_LIMELIGHT_ROLL = 0;
+        public static final double LEFT_LIMELIGHT_PITCH = 0;
+        public static final double LEFT_LIMELIGHT_YAW = 0;
 
-        //FRI = Front_Right_Inside camera
-        public static final double FRI_frontX = Units.inchesToMeters(10.229); // 7.495 7.176364 -7.176364
-        public static final double FRI_frontY = Units.inchesToMeters(-10.140);
-        public static final double FRI_frontZ = Units.inchesToMeters(7.825761); // 7.02
 
-        public static final double FRI_frontRoll = Math.toRadians(0);
-        public static final double FRI_frontPitch = Math.toRadians(-15.0); // -75.0 negative pitch is up according to 25 code
-        public static final double FRI_frontYaw = Math.toRadians(-131.987);
+        public static final double RIGHT_LIMELIGHT_X = 0;
+        public static final double RIGHT_LIMELIGHT_Y = 0;
+        public static final double RIGHT_LIMELIGHT_Z = 0;
 
-        //FRO = Front_Right_Outside camera
-        public static final double FRO_frontX = Units.inchesToMeters(9.411); // 7.495 7.176364 -7.176364
-        public static final double FRO_frontY = Units.inchesToMeters(-10.998);
-        public static final double FRO_frontZ = Units.inchesToMeters(13.929); // 7.02
+        public static final double RIGHT_LIMELIGHT_ROLL = 0;
+        public static final double RIGHT_LIMELIGHT_PITCH = 0; 
+        public static final double RIGHT_LIMELIGHT_YAW = 0;
 
-        public static final double FRO_frontRoll = Math.toRadians(0);
-        public static final double FRO_frontPitch = Math.toRadians(-15); // -75.0 negative pitch is up according to 25 code
-        public static final double FRO_frontYaw = Math.toRadians(0);
+        
 
         //blueHub translations
         public static final Pose3d blueHub = new Pose3d(4.625, 4.035, 1.4304264/*1.828*/, new Rotation3d());
