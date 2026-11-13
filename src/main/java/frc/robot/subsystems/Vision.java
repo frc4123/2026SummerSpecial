@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+
 import static org.wpilib.units.Units.Meters;
 
 import org.wpilib.math.geometry.Pose2d;
@@ -18,6 +19,8 @@ import com.limelightvision.PoseEstimateType;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.utils.Field;
+
+@SuppressWarnings("resource")
 
 public class Vision extends SubsystemBase {
 
@@ -46,13 +49,13 @@ public class Vision extends SubsystemBase {
         VisionConstants.FRONT_LIMELIGHT_X, VisionConstants.FRONT_LIMELIGHT_Y, VisionConstants.FRONT_LIMELIGHT_Z,
         VisionConstants.FRONT_LIMELIGHT_ROLL, VisionConstants.FRONT_LIMELIGHT_PITCH, VisionConstants.FRONT_LIMELIGHT_YAW
     ).withPoseEstimateConfig_MT2(mt2Config());
-
+ 
     private final Limelight leftLimelight = new Limelight(
         LEFT_LIMELIGHT_NAME,
         VisionConstants.LEFT_LIMELIGHT_X, VisionConstants.LEFT_LIMELIGHT_Y, VisionConstants.LEFT_LIMELIGHT_Z,
         VisionConstants.LEFT_LIMELIGHT_ROLL, VisionConstants.LEFT_LIMELIGHT_PITCH, VisionConstants.LEFT_LIMELIGHT_YAW
     ).withPoseEstimateConfig_MT2(mt2Config());
-
+ 
     private final Limelight rightLimelight = new Limelight(
         RIGHT_LIMELIGHT_NAME,
         VisionConstants.RIGHT_LIMELIGHT_X, VisionConstants.RIGHT_LIMELIGHT_Y, VisionConstants.RIGHT_LIMELIGHT_Z,
@@ -68,7 +71,10 @@ public class Vision extends SubsystemBase {
         CommandSwerveDrivetrain.getInstance();
 
     public Vision() {
-        // Camera objects are initialized above.
+        // Apply the MegaTag2 filtering / std dev config to every camera.
+        for (Limelight ll : limelights) {
+            ll.withPoseEstimateConfig_MT2(mt2Config());
+        }
     }
 
     /**
