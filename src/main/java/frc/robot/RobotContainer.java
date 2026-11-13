@@ -62,7 +62,6 @@ import frc.robot.commands.autos.mtest;
 import frc.robot.commands.autos.orbit;
 import frc.robot.commands.hood.AvoidDecapitation;
 import frc.robot.commands.hood.HoodAim;
-// import frc.robot.commands.hood.ManualReset;
 // import frc.robot.commands.hood.HoodAim;
 import frc.robot.commands.intakeArm.ForceIntakeArmMid;
 import frc.robot.commands.intakeArm.IntakeArmIn;
@@ -166,7 +165,6 @@ public class RobotContainer {
     private final SetShooterVelocity setShooterVelocity = new SetShooterVelocity(shooter);
     private final UptakeUp uptakeUp = new UptakeUp(uptake, turret, sevenEleven, shooter);
     private final UptakeStop uptakeStop = new UptakeStop(uptake, shooter);
-    // private final ManualReset manualReset = new ManualReset(hood);
     // private final UptakeReverse uptakeReverse = new UptakeReverse(uptake);
     // private final ClimbUp climbUp = new ClimbUp(climb);
     // private final ClimbDown climbDown = new ClimbDown(climb);
@@ -174,7 +172,9 @@ public class RobotContainer {
 
     public double currentAngle = drivetrain.getState().Pose.getRotation().getDegrees();
     // private final TunableDouble hoodFixedDeg = Tunables.addDouble("Hood/FixedDeg", 50.0);
-    // private final Command fixedHood = hood.run(() -> hood.setFixedAngle());
+    // private final Command fixedHood = hood.run(() -> hood.setFixedAngle(hoodFixedDeg.get()));
+    public Command ResetPose = vision.run(() -> vision.resetPosetoTower());
+
     public RobotContainer() {
         configureBindings();
 
@@ -404,8 +404,7 @@ public class RobotContainer {
         joystick.rightTrigger().onTrue(uptakeUp);
         joystick.rightTrigger().onFalse(uptakeStop);
 
-        joystick.leftTrigger().onTrue(forceIntakeArmMid);
-        joystick.leftTrigger().onFalse(intakeArmOut);
+        joystick.leftTrigger().onTrue(ResetPose);
 
         //TODO make a shot that is independent of pose
 

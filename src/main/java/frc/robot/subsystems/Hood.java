@@ -40,12 +40,12 @@ public class Hood extends SubsystemBase{
 
     private final MotionMagicTorqueCurrentFOC motionMagic =
         new MotionMagicTorqueCurrentFOC(
-            HoodConstants.MIN_HOOD_ANGLE
+            HoodConstants.stowPosition
         );
 
     private final MotionMagicTorqueCurrentFOC motionMagicFree =
         new MotionMagicTorqueCurrentFOC(
-            HoodConstants.MIN_HOOD_ANGLE
+            HoodConstants.stowPosition
         );
     private final MotionMagicConfigs magicConfigs = 
         new MotionMagicConfigs()
