@@ -363,32 +363,32 @@ public class Constants {
         public static final double ambiguityThreshold = 0.03;// 0.06
         public static final double tagAreaThreshold = 0.025;
 
-        //FLO = Front_Left_Outside camera
+        // Front Facing Limelight
         public static final double FRONT_LIMELIGHT_X = 0;
         public static final double FRONT_LIMELIGHT_Y = 0;
         public static final double FRONT_LIMELIGHT_Z = 0;
 
-        public static final double FRONT_LIMELIGHT_ROLL = 0;
-        public static final double FRONT_LIMELIGHT_PITCH = 0;
-        public static final double FRONT_LIMELIGHT_YAW = 0;
+        public static final double FRONT_LIMELIGHT_ROLL = Math.toRadians(0);
+        public static final double FRONT_LIMELIGHT_PITCH = Math.toRadians(0);
+        public static final double FRONT_LIMELIGHT_YAW = Math.toRadians(0);
 
-        //FLI = Front_Left_Inside camera
+        // Left Facing Limelight
         public static final double LEFT_LIMELIGHT_X = 0;
         public static final double LEFT_LIMELIGHT_Y = 0;
         public static final double LEFT_LIMELIGHT_Z = 0;
 
-        public static final double LEFT_LIMELIGHT_ROLL = 0;
-        public static final double LEFT_LIMELIGHT_PITCH = 0;
-        public static final double LEFT_LIMELIGHT_YAW = 0;
+        public static final double LEFT_LIMELIGHT_ROLL = Math.toRadians(0);
+        public static final double LEFT_LIMELIGHT_PITCH = Math.toRadians(0);
+        public static final double LEFT_LIMELIGHT_YAW = Math.toRadians(0);
 
+        // Right Facing Limelight
+        public static final double RIGHT_LIMELIGHT_X = 0.255;
+        public static final double RIGHT_LIMELIGHT_Y = 0.156;
+        public static final double RIGHT_LIMELIGHT_Z = 0.253;
 
-        public static final double RIGHT_LIMELIGHT_X = 0;
-        public static final double RIGHT_LIMELIGHT_Y = 0;
-        public static final double RIGHT_LIMELIGHT_Z = 0;
-
-        public static final double RIGHT_LIMELIGHT_ROLL = 0;
-        public static final double RIGHT_LIMELIGHT_PITCH = 0; 
-        public static final double RIGHT_LIMELIGHT_YAW = 0;
+        public static final double RIGHT_LIMELIGHT_ROLL = Math.toRadians(0);
+        public static final double RIGHT_LIMELIGHT_PITCH = Math.toRadians(30);
+        public static final double RIGHT_LIMELIGHT_YAW = Math.toRadians(-4.32875);
 
         
 

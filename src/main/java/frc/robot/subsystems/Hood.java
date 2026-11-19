@@ -16,7 +16,6 @@ import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import org.wpilib.command2.SubsystemBase;
-import org.wpilib.telemetry.Telemetry;
 import org.wpilib.units.measure.Angle;
 
 import frc.robot.Constants;

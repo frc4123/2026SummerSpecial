@@ -156,7 +156,7 @@ public class RobotContainer {
     private final IntakeArmInMid intakeArmInMid = new IntakeArmInMid(intakeArm, intakeRollers);
     private final IntakeArmOut intakeArmOut = new IntakeArmOut(intakeArm);
     // private final IntakeArmMid intakeArmMid = new IntakeArmMid(intakeArm, intakeRollers);
-    private final ForceIntakeArmMid forceIntakeArmMid = new ForceIntakeArmMid(intakeArm);
+    // private final ForceIntakeArmMid forceIntakeArmMid = new ForceIntakeArmMid(intakeArm);
     // private final IntakeShimmy intakeShimmy = new IntakeShimmy(intakeArm, intakeRollers);
     private final RollReverse rollReverse = new RollReverse(sevenEleven);
     private final RollStop rollStop = new RollStop(sevenEleven);
