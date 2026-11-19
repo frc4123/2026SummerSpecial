@@ -25,8 +25,8 @@ public class Vision extends SubsystemBase {
 
     // DON'T FORGET TO UPDATE THE NAME OF THE CAMERAS IN THE CONSTRUCTOR BELOW.
 
-    private static final String FRONT_LIMELIGHT_NAME = "limelight-front";
-    private static final String LEFT_LIMELIGHT_NAME = "limelight-left";
+        private static final String FRONT_LIMELIGHT_NAME = "limelight-front";
+    // private static final String LEFT_LIMELIGHT_NAME = "limelight-left";
     private static final String RIGHT_LIMELIGHT_NAME = "limelight-right";
 
     /**
@@ -49,11 +49,11 @@ public class Vision extends SubsystemBase {
         VisionConstants.FRONT_LIMELIGHT_ROLL, VisionConstants.FRONT_LIMELIGHT_PITCH, VisionConstants.FRONT_LIMELIGHT_YAW
     ).withPoseEstimateConfig_MT2(mt2Config());
  
-    private final Limelight leftLimelight = new Limelight(
-        LEFT_LIMELIGHT_NAME,
-        VisionConstants.LEFT_LIMELIGHT_X, VisionConstants.LEFT_LIMELIGHT_Y, VisionConstants.LEFT_LIMELIGHT_Z,
-        VisionConstants.LEFT_LIMELIGHT_ROLL, VisionConstants.LEFT_LIMELIGHT_PITCH, VisionConstants.LEFT_LIMELIGHT_YAW
-    ).withPoseEstimateConfig_MT2(mt2Config());
+    // private final Limelight leftLimelight = new Limelight(
+    //     LEFT_LIMELIGHT_NAME,
+    //     VisionConstants.LEFT_LIMELIGHT_X, VisionConstants.LEFT_LIMELIGHT_Y, VisionConstants.LEFT_LIMELIGHT_Z,
+    //     VisionConstants.LEFT_LIMELIGHT_ROLL, VisionConstants.LEFT_LIMELIGHT_PITCH, VisionConstants.LEFT_LIMELIGHT_YAW
+    // ).withPoseEstimateConfig_MT2(mt2Config());
  
     private final Limelight rightLimelight = new Limelight(
         RIGHT_LIMELIGHT_NAME,
@@ -61,7 +61,7 @@ public class Vision extends SubsystemBase {
         VisionConstants.RIGHT_LIMELIGHT_ROLL, VisionConstants.RIGHT_LIMELIGHT_PITCH, VisionConstants.RIGHT_LIMELIGHT_YAW
     ).withPoseEstimateConfig_MT2(mt2Config());
 
-    private final Limelight[] limelights = {frontLimelight, leftLimelight, rightLimelight};
+    private final Limelight[] limelights = {frontLimelight,rightLimelight};
 
     private static boolean isBlue = false;
     private static boolean isRed = false;

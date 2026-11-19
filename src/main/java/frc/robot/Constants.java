@@ -373,13 +373,13 @@ public class Constants {
         public static final double FRONT_LIMELIGHT_YAW = Math.toRadians(0);
 
         // Left Facing Limelight
-        public static final double LEFT_LIMELIGHT_X = 0;
-        public static final double LEFT_LIMELIGHT_Y = 0;
-        public static final double LEFT_LIMELIGHT_Z = 0;
+        public static final double LEFT_LIMELIGHT_X = Units.inchesToMeters(-10.231);
+        public static final double LEFT_LIMELIGHT_Y = Units.inchesToMeters(-11.186);
+        public static final double LEFT_LIMELIGHT_Z = Units.inchesToMeters(9.875);
 
-        public static final double LEFT_LIMELIGHT_ROLL = Math.toRadians(0);
+        public static final double LEFT_LIMELIGHT_ROLL = Math.toRadians(-90);
         public static final double LEFT_LIMELIGHT_PITCH = Math.toRadians(0);
-        public static final double LEFT_LIMELIGHT_YAW = Math.toRadians(0);
+        public static final double LEFT_LIMELIGHT_YAW = Math.toRadians(25);
 
         // Right Facing Limelight
         public static final double RIGHT_LIMELIGHT_X = 0.255;
