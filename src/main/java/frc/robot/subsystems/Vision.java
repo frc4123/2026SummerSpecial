@@ -27,7 +27,7 @@ public class Vision extends SubsystemBase {
 
         private static final String FRONT_LIMELIGHT_NAME = "limelight-front";
     // private static final String LEFT_LIMELIGHT_NAME = "limelight-left";
-    private static final String RIGHT_LIMELIGHT_NAME = "limelight-right";
+        private static final String RIGHT_LIMELIGHT_NAME = "limelight-right";
 
     /**
      * MegaTag2 filtering + std devs. The library rejects bad estimates and
